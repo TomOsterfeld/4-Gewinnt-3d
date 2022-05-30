@@ -8,6 +8,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import org.openjfx.connect_4.Logik.Game;
+import org.openjfx.connect_4.Logik.Player;
+
 /**
  * JavaFX App
  */
@@ -32,7 +35,14 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-        launch();
+    	System.out.println("test");
+        //launch();
+    	
+    	Player player1 = new Player(), player2 = new Player();
+    	
+    	Game game = new Game(7, 7, 5, player1, player2);
+    	
+    	System.out.println(player1.getMove().x);
     }
 
 }
