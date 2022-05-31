@@ -8,7 +8,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import org.openjfx.connect_4.Logik.ConsolePlayer;
 import org.openjfx.connect_4.Logik.Game;
+import org.openjfx.connect_4.Logik.Game.GameStage;
+import org.openjfx.connect_4.Logik.Move;
 import org.openjfx.connect_4.Logik.Player;
 
 /**
@@ -35,14 +38,20 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-    	System.out.println("test");
         //launch();
     	
-    	Player player1 = new Player(), player2 = new Player();
-    	
-    	Game game = new Game(7, 7, 5, player1, player2);
-    	
-    	System.out.println(player1.getMove().x);
+    	startConsoleGame();
     }
-
+    
+    public static void startConsoleGame() {
+    	Game game = new Game(4, 4, 4, new ConsolePlayer(), new ConsolePlayer());
+    	
+    	while(game.getCurrentGameStage().equals(GameStage.GAME_NOT_ENDED)) {
+        	System.out.println(game);
+    		Move move = game.getCurrentPlayer().getMove();
+    		game.doMove(move);
+    		
+    	}
+    }
+   
 }

@@ -1,8 +1,21 @@
 package org.openjfx.connect_4.Logik;
 
-public class Player {
+public abstract class Player {
+	protected Game game;
+	protected int x;
+	protected int y;
 	
-	public Move getMove() {
-		return new Move(1, 1);
+	public Player(Game game) {
+		this.game = game;
+		x = game.getX();
+		y = game.getY();
+	}
+	
+	public Player() {}
+	
+	public abstract Move getMove();
+	
+	public void setGame(Game game) {
+		this.game = game;
 	}
 }
