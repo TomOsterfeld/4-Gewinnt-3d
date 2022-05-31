@@ -1,5 +1,10 @@
 package org.openjfx.connect_4.Logik;
 
+/**
+ * 
+ * @author Tom
+ *
+ */
 public class Move {
 	private int x, y;
 	

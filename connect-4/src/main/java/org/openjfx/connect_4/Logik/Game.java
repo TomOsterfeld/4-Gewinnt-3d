@@ -1,5 +1,10 @@
 package org.openjfx.connect_4.Logik;
 
+/**
+ * 
+ * @author Tom
+ *
+ */
 public class Game {
 	private final int x, y, z;
 	

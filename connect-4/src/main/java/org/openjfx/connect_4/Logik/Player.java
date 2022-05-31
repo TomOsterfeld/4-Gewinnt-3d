@@ -1,5 +1,10 @@
 package org.openjfx.connect_4.Logik;
 
+/**
+ * 
+ * @author Tom
+ *
+ */
 public abstract class Player {
 	protected Game game;
 	protected int x;

@@ -2,6 +2,11 @@ package org.openjfx.connect_4.Logik;
 
 import java.util.Scanner;
 
+/**
+ * 
+ * @author Tom
+ *
+ */
 public class ConsolePlayer extends Player {
 	public ConsolePlayer(Game game) {
 		super(game);

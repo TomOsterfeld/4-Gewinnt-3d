@@ -1,5 +1,10 @@
 package org.openjfx.connect_4.Logik;
 
+/**
+ * 
+ * @author Tom
+ *
+ */
 public class RandomPlayer extends Player {	
 	public RandomPlayer(Game game) {
 		super(game);

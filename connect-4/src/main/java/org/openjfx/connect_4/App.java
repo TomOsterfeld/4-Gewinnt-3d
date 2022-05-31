@@ -15,7 +15,9 @@ import org.openjfx.connect_4.Logik.Move;
 import org.openjfx.connect_4.Logik.Player;
 
 /**
- * JavaFX App
+ * 
+ * @author Tom
+ *
  */
 public class App extends Application {
 
