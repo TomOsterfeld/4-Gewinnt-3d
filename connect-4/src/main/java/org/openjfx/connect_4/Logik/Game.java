@@ -1,5 +1,8 @@
 package org.openjfx.connect_4.Logik;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 
  * @author Tom
@@ -21,6 +24,8 @@ public class Game {
 	
 	private Move latestMove;
 	private Move secondLatestMove;
+	
+	private int rating;
 	
 	public enum GameStage {
 		GAME_NOT_ENDED, RED_WIN, YELLOW_WIN, DRAW
@@ -57,6 +62,8 @@ public class Game {
 	public void init(int x, int y, int z, Player playerRed, Player playerYellow) {		
 		playerRed.setGame(this); // set the players games to this one
 		playerYellow.setGame(this);
+		
+		rating = 0;
 		
 		setCurrentPlayer(playerRed);
 		currentStage = GameStage.GAME_NOT_ENDED;
@@ -107,7 +114,50 @@ public class Game {
 	}
 	
 	public boolean updateRating(Move move) {
+		List<List<Token>> rows = getRows(move);
+		
+		rows.forEach(row -> {
+			
+		});
+		
 		return false;
+	}
+	
+	/**
+	 * 
+	 * @param move
+	 * @return
+	 */
+	public List<List<Token>> getRows(Move move) {
+		List<List<Token>> rows = new ArrayList();
+		
+		for(int x = -1; x <= 0; x++) {
+			for(int y = -1; y <= 0; y++) {
+				for(int z = -1; z <= 0; z++) {
+					int leftBoarder = 3;
+					int rightBoarder = 3;
+					
+					int rowLength = rightBoarder + leftBoarder + 1;
+					
+					if(rowLength < 4) continue; // row not long enough
+					List<Token> row = new ArrayList(7);
+					
+					int _x = move.getX() - x * leftBoarder;
+					int _y = move.getY() - y * leftBoarder;
+					int _z = heights[move.getX()][move.getY()] - z * leftBoarder;
+					
+					for(int i = 0; i < rowLength; _x += x, _y += y, _z += z) {
+						if(_x > this.x || _y > this.y || _z > this.z || _z < 0 || _y < 0 || _x < 0)
+							continue;
+						row.add(board[_x][_y][_z]);
+					}
+					
+					rows.add(row);
+				}
+			}
+		}
+		
+		return rows;
 	}
 	
 	@Override
