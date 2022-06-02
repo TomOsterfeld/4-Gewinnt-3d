@@ -30,7 +30,7 @@ public class App extends Application {
         stage.show();
     }
 
-    static void setRoot(String fxml) throws IOException {
+    public static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
 
@@ -46,14 +46,15 @@ public class App extends Application {
     }
     
     public static void startConsoleGame() {
-    	Game game = new Game(4, 4, 4, new ConsolePlayer(), new ConsolePlayer());
+    	Game game = new Game(5, 5, 5, new ConsolePlayer(), new ConsolePlayer());
     	
     	while(game.getCurrentGameStage().equals(GameStage.GAME_NOT_ENDED)) {
         	System.out.println(game);
     		Move move = game.getCurrentPlayer().getMove();
     		game.doMove(move);
-    		
     	}
+    	
+    	System.out.println(game);
     }
    
 }
