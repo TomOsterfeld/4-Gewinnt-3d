@@ -8,7 +8,6 @@ package org.openjfx.connect_4.Logik;
 public class RandomPlayer extends Player {	
 	public RandomPlayer(Game game) {
 		super(game);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public RandomPlayer() {}
@@ -18,8 +17,8 @@ public class RandomPlayer extends Player {
 	 */
 	@Override
 	public Move getMove() {	// TODO: sicherstellen, dass Move gültig ist.	
-		int x = (int) (Math.random() * super.x); // zufällige y-Koordinate
-		int y = (int) (Math.random() * super.y); // zufällige x-Koordinate
+		int x = (int) (Math.random() * game.getX()); // zufällige y-Koordinate
+		int y = (int) (Math.random() * game.getY()); // zufällige x-Koordinate
 		
 		return new Move(x, y);
 	}

@@ -2,6 +2,12 @@ package org.openjfx.connect_4.Logik;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+
+import org.openjfx.connect_4.Grafik.GameEnvironment;
+import org.openjfx.connect_4.Grafik.SceneController;
+
+import javafx.application.Platform;
 
 /**
  * 
@@ -14,7 +20,7 @@ public class Game {
 	private final Token[][][] board; // store tokens
 	private final int[][] heights; // store the height at each location
 	
-	private final int winningLength = 4;
+	private final int winningLength;
 	
 	private Player playerRed;
 	private Player playerYellow;
@@ -47,10 +53,11 @@ public class Game {
 		}
 	}
 	
-	public Game(int x, int y, int z, Player playerRed, Player playerYellow) {
+	public Game(int x, int y, int z, int winningLength, Player playerRed, Player playerYellow) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		this.winningLength = winningLength;
 		
 		this.board = new Token[x][y][z];
 		this.heights = new int[x][y];
@@ -112,7 +119,7 @@ public class Game {
 			updateGameStage(move); // aktualisiere den Spielstatus
 			
 			redTurn = !redTurn; // der andere Spieler ist jetzt am Zug
-			setCurrentPlayer(redTurn ? playerRed : playerYellow);
+			setCurrentPlayer(redTurn ? getPlayerRed() : playerYellow);
 			
 			System.out.println(rating);
 			
@@ -128,6 +135,7 @@ public class Game {
 	 * 			false:	der Zug ist unzulässig
 	 */
 	public boolean isValide(Move move) {
+		if(move == null) return false;
 		if(move.getX() < 0 || move.getX() >= x
 				|| move.getY() < 0 || move.getY() >= y) return false; // Der Punkt mit den entsprechenden x-, y-Koordinaten ist außerhalb des Spielfeldes
 		if(heights[move.getX()][move.getY()] >= z || currentStage != GameStage.GAME_NOT_ENDED) return false;
@@ -249,14 +257,72 @@ public class Game {
 		return rows;
 	}
 	
+	public static void startGame(Game game) {
+    	Player playerRed = game.getPlayerRed();
+    	Player playerYellow = game.getPlayerYellow();
+    	
+    	playerRed.setGame(game);
+    	playerYellow.setGame(game);
+    	
+    	Consumer<Move> placeTokenHandler = move -> {
+    		if(game.redTurn) {
+    			playerRed.setMove(move);
+    	        synchronized(playerRed) {
+    	        	playerRed.notify();
+    	        }
+    		} else {
+    			playerYellow.setMove(move);
+    	        synchronized(playerYellow) {
+    	        	playerYellow.notify();
+    	        }
+    		}
+    	};
+    	
+    	GameEnvironment gameEnvironment = new GameEnvironment(game.x, game.y, game.z, placeTokenHandler);
+        SceneController.switchScene("GAME_ENVIRONMENT", gameEnvironment.getScene()); //TODO: there might be several gameEnvironments
+    	
+        Thread thread = new Thread() {
+        	public void run() {
+		    	while(game.getCurrentGameStage().equals(GameStage.GAME_NOT_ENDED)) {
+	    			try {
+						Thread.currentThread().sleep(50); // leichte Verzögerung andernfalls ist es möglich, dass der vorherige Zug nicht vollständig ausgeführt wurde
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+	    			
+		    		Move move;
+		    		do {
+			    		if(game.redTurn) {
+			    			move = playerRed.getMove();
+			    		} else {
+			    			move = playerYellow.getMove();
+			    		}
+		    		} while(!game.isValide(move));
+		    		game.doMove(move);
+		    		
+		    		final int x = move.getX();
+		    		final int y = move.getY();
+		    		
+		    		Platform.runLater(() -> gameEnvironment.placeToken(
+		    				new org.openjfx.connect_4.Grafik.Token(game.redTurn ? false : true, GameEnvironment.TILE_SIZE / 2), x,
+		    				y, game.heights[x][y] - 1));
+		    		
+		    		System.out.println(game);
+		    	}
+        	}
+        };
+        
+        thread.start();
+	}
+	
 	@Override
 	public String toString() {
 		String toString = (redTurn ? "Rot" : "Gelb") + " ist am Zug\n";
 		
         for(int i = 0; i < z; i++) {
-            for(int j = 0; j < getX(); j++) {
-                for(int k = 0; k < getY(); k++) {
-                    toString += " " + board[j][k][getY() - i - 1] + " ";
+            for(int j = 0; j < x; j++) {
+                for(int k = 0; k < y; k++) {
+                    toString += " " + board[j][k][z - i - 1] + " ";
                 }
                 toString += "   ";
             }
@@ -285,5 +351,13 @@ public class Game {
 
 	public void setCurrentPlayer(Player currentPlayer) {
 		this.currentPlayer = currentPlayer;
+	}
+
+	public Player getPlayerRed() {
+		return playerRed;
+	}
+
+	public Player getPlayerYellow() {
+		return playerYellow;
 	}
 }
