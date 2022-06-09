@@ -20,16 +20,20 @@
                   <Button fx:id="startButton" mnemonicParsing="false" onAction="#onStartButtonClicked" prefHeight="30.0" prefWidth="114.0" text="Start" />
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="176.0" spacing="10.0">
                      <children>
-                        <SplitMenuButton mnemonicParsing="false" prefHeight="34.0" prefWidth="142.0" text="SplitMenuButton">
+                        <SplitMenuButton mnemonicParsing="false" prefHeight="34.0" prefWidth="142.0" text="Player 1" fx:id="playerButton1">
                           <items>
-                            <MenuItem mnemonicParsing="false" text="Action 1" />
-                            <MenuItem mnemonicParsing="false" text="Action 2" />
+                            <MenuItem mnemonicParsing="false" text="Local Game"/>
+                            <MenuItem mnemonicParsing="false" text="Computer Game"/>
+                            <MenuItem mnemonicParsing="false" text="Random Game"/>
+                            <MenuItem mnemonicParsing="false" text="Console Game"/>
                           </items>
                         </SplitMenuButton>
-                        <SplitMenuButton mnemonicParsing="false" prefHeight="35.0" prefWidth="150.0" text="SplitMenuButton">
+                        <SplitMenuButton mnemonicParsing="false" prefHeight="35.0" prefWidth="150.0" text="Player 2" fx:id="playerButton2">
                           <items>
-                            <MenuItem mnemonicParsing="false" text="Action 1" />
-                            <MenuItem mnemonicParsing="false" text="Action 2" />
+                            <MenuItem mnemonicParsing="false" text="Local Game"/>
+                            <MenuItem mnemonicParsing="false" text="Computer Game"/>
+                            <MenuItem mnemonicParsing="false" text="Random Game"/>
+                            <MenuItem mnemonicParsing="false" text="Console Game"/>
                           </items>
                         </SplitMenuButton>
                      </children>

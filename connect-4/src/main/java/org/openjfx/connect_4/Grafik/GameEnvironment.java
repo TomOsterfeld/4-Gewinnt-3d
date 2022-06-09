@@ -18,6 +18,7 @@ import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
+import javafx.scene.control.Label;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
@@ -54,9 +55,9 @@ public class GameEnvironment {
 	private SubScene scene_3D;
 	private SmartGroup content;
 	
-    private Color color = Color.YELLOW;
-    private Color transparentColor = Color.RED;
-    private Color darkTransparentColor = Color.GREEN;
+    private Color color;
+    private Color transparentColor;
+    private Color darkTransparentColor;
     
     private Token[][][] grid;
 	
@@ -87,7 +88,8 @@ public class GameEnvironment {
 		 
 		globalRoot = new AnchorPane();
 		globalRoot.getChildren().add(scene_3D);
-		globalRoot.getChildren().add(createTokenSymbol());
+		globalRoot.getChildren().add(createTokenSymbolYellow());
+		globalRoot.getChildren().add(createTokenSymbolRed());
 		 
 		 
 		scene = new Scene(globalRoot);
@@ -105,8 +107,6 @@ public class GameEnvironment {
 		grid = new Token[x][y][z];
 		
 		createKeyBindings();		 
-		
-		//placeToken(new Token(true, 100), 0, 0, 0);
 		
 		//createBoxes();
 	}
@@ -170,15 +170,21 @@ public class GameEnvironment {
         animation.setToY(-(z + 1) * TILE_SIZE); // Zielposition
         animation.setOnFinished(e -> {});
         animation.play();
+        
         token.setPickOnBounds(false);
-
         token.mouseTransparentProperty().set(true);
+        
+        redturn = !redturn;
     }
 	
 	private SmartGroup createContent() {
         SmartGroup root = new SmartGroup();
 
         Consumer<Node> addToGroup = root.getChildren()::addAll;
+        
+        color = redturn  ? Color.rgb(200, 0, 0, 0.9) : Color.rgb(200, 200, 50, 0.9);
+        transparentColor = redturn ? Color.rgb(200, 0, 0, 0.3) : Color.rgb(200, 200, 50, 0.3);
+        darkTransparentColor = redturn ? Color.rgb(100, 0, 0, 0.9) : Color.rgb(100, 100, 25, 0.9);
         
         addToGroup.accept(createGrid());
         createBoxes().forEach(addToGroup);
@@ -200,7 +206,7 @@ public class GameEnvironment {
         return grid;
 	}
 	
-    private Circle createTokenSymbol() {
+    private Circle createTokenSymbolYellow() {
         Circle yellowToken = new Circle();
         yellowToken.setFill(Color.YELLOW);
         yellowToken.setRadius(20);
@@ -208,6 +214,29 @@ public class GameEnvironment {
         yellowToken.setTranslateY(yellowToken.getRadius() + 15);
         yellowToken.setEffect(getLighting());
         return yellowToken;
+    }
+    
+    private Circle createTokenSymbolRed() {
+        Circle redToken = new Circle();
+        redToken.setFill(Color.RED);
+        redToken.setRadius(20);
+        redToken.setTranslateX(-20 - redToken.getRadius());
+        redToken.setTranslateY(redToken.getRadius() + 15);
+        redToken.translateXProperty()
+        	.bind(SceneController.getStage().widthProperty().subtract(20 + 2 * redToken.getRadius())); // x Position muss sich an breite des Panes anpassen
+        redToken.setEffect(getLighting());
+        return redToken;
+    }
+    
+    private List<Label> createGameClocks() {
+    	Label redClock = new Label("00 : 00");
+    	Label yellowClock = new Label("00 : 00");
+    	
+    	redClock.setFont(null);
+    	
+    	
+    	
+    	return List.of(redClock, yellowClock);
     }
     
     private List<Node> createBoxes() {
@@ -249,6 +278,7 @@ public class GameEnvironment {
                 cylinder.setCullFace(CullFace.BACK);
                 cylinder.setVisible(false);
                 cylinder.setMouseTransparent(true);
+                //cylinder.setViewOrder(2);
 
                 final int COLUMN_X = i, COLUMN_Z = j;
 

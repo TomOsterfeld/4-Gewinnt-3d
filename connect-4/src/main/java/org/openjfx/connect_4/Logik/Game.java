@@ -285,7 +285,7 @@ public class Game {
         	public void run() {
 		    	while(game.getCurrentGameStage().equals(GameStage.GAME_NOT_ENDED)) {
 	    			try {
-						Thread.currentThread().sleep(50); // leichte Verzögerung andernfalls ist es möglich, dass der vorherige Zug nicht vollständig ausgeführt wurde
+						Thread.currentThread().sleep(50); // leichte Verz�gerung andernfalls ist es möglich, dass der vorherige Zug nicht vollständig ausgeführt wurde
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
