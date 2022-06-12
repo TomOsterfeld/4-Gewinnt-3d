@@ -38,8 +38,6 @@ public class StartMenuController {
     	String value1 = playerButton1.getText();
     	String value2 = playerButton2.getText();
     	
-    	System.out.println(value1);
-    	
     	switch(value1) {
     		case "Random Player": 
     			player1 = new RandomPlayer(); break;
