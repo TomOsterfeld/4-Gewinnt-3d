@@ -49,4 +49,9 @@ public class ConsolePlayer extends Player {
 		
 		return number;
 	}
+	
+	@Override
+	public String toString() {
+		return "Console Player";
+	}	
 }

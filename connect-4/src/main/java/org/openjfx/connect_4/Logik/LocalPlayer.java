@@ -15,4 +15,8 @@ public class LocalPlayer extends Player {
 		return move;
 	}
 	
+	@Override
+	public String toString() {
+		return "Local Player";
+	}	
 }

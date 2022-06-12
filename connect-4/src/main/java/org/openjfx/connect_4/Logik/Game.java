@@ -373,7 +373,7 @@ public class Game {
         		
 		    	while(game.getCurrentGameStage().equals(GameStage.GAME_NOT_ENDED)) {
 	    			try {
-						Thread.currentThread().sleep(50); // leichte Verz�gerung andernfalls ist es möglich, dass der vorherige Zug nicht vollständig ausgeführt wurde
+						Thread.currentThread().sleep(25); // leichte Verz�gerung andernfalls ist es möglich, dass der vorherige Zug nicht vollständig ausgeführt wurde
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -398,9 +398,9 @@ public class Game {
 		    		System.out.println(game);
 		    	}
 		    	if(game.getCurrentGameStage().equals(GameStage.RED_WIN)) {
-		    		System.out.println("red wins");
+		    		System.out.println(game.getPlayerRed() + " (red) wins");
 		    	} else {
-		    		System.out.println("yellow wins");
+		    		System.out.println(game.getPlayerYellow() + " (yellow) wins");
 		    	}
         	}
         };

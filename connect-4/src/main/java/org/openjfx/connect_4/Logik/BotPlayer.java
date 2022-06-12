@@ -18,7 +18,7 @@ public class BotPlayer extends Player {
 	@Override
 	public Move getMove() {
 		startTime = System.currentTimeMillis();
-		currentDepth = 5;
+		currentDepth = 7;
 		
 		
 		if(game.isRedTurn()) {
@@ -81,5 +81,10 @@ public class BotPlayer extends Player {
 		
 		return minEval;
 	}
+	
+	@Override
+	public String toString() {
+		return "Bot";
+	}	
 
 }

@@ -18,6 +18,9 @@ public class StartMenuController {
 	private SplitMenuButton playerButton1, playerButton2;
 	
 	public void initialize() {
+		playerButton1.setText("Local Game");
+		playerButton2.setText("Local Game");
+		
 		playerButton1.getItems().forEach(item -> {
 			item.setOnAction(action -> {
 				playerButton1.setText(item.getText());
@@ -60,7 +63,7 @@ public class StartMenuController {
 				player2 = new LocalPlayer();
     	} 
     	
-    	Game game = new Game(5, 5, 4, 4, player1, player2);
+    	Game game = new Game(4, 4, 4, 4, player1, player2);
     	Game.startGame(game);
     }
     

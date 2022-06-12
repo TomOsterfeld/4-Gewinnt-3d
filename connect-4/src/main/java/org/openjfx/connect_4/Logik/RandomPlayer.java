@@ -1,5 +1,7 @@
 package org.openjfx.connect_4.Logik;
 
+import java.util.List;
+
 /**
  * 
  * @author Tom
@@ -17,9 +19,15 @@ public class RandomPlayer extends Player {
 	 */
 	@Override
 	public Move getMove() {	// TODO: sicherstellen, dass Move gültig ist.	
-		int x = (int) (Math.random() * game.getX()); // zufällige y-Koordinate
-		int y = (int) (Math.random() * game.getY()); // zufällige x-Koordinate
+		List<Move> valideMoves = game.getValideMoves();
 		
-		return new Move(x, y);
+		int randomIndex = (int) (Math.random() * valideMoves.size()); 
+		
+		return valideMoves.get(randomIndex);
 	}
+	
+	@Override
+	public String toString() {
+		return "Random Player";
+	}	
 }
