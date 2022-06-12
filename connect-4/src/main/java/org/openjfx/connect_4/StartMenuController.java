@@ -18,15 +18,27 @@ public class StartMenuController {
 	private SplitMenuButton playerButton1, playerButton2;
 	
 	public void initialize() {
+		playerButton1.getItems().forEach(item -> {
+			item.setOnAction(action -> {
+				playerButton1.setText(item.getText());
+			});
+		});
 		
+		playerButton2.getItems().forEach(item -> {
+			item.setOnAction(action -> {
+				playerButton2.setText(item.getText());
+			});
+		});
 	}
 	
     @FXML
     private void onStartButtonClicked() {
     	Player player1, player2;
     	
-    	String value1 = "Local Player";//playerButton1.getPopupSide();
-    	String value2 = "Local Player";
+    	String value1 = playerButton1.getText();
+    	String value2 = playerButton2.getText();
+    	
+    	System.out.println(value1);
     	
     	switch(value1) {
     		case "Random Player": 
@@ -37,7 +49,7 @@ public class StartMenuController {
     			player1 = new ConsolePlayer(); break;
     		default: 
     			player1 = new LocalPlayer();
-    	} 
+    	}
     	
     	switch(value2) {
 			case "Random Player": 
@@ -50,7 +62,7 @@ public class StartMenuController {
 				player2 = new LocalPlayer();
     	} 
     	
-    	Game game = new Game(5, 5, 5, 4, player1, player2);
+    	Game game = new Game(5, 5, 4, 4, player1, player2);
     	Game.startGame(game);
     }
     

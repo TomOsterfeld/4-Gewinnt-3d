@@ -149,9 +149,7 @@ public class GameEnvironment {
 	
     public void placeToken(Token token, int x, int y, int z) {
         int corner_x = (int) (-(this.x * TILE_SIZE) / 2.0 + (x + 0.5) * TILE_SIZE);
-        int corner_y = (int) (-(this.y * TILE_SIZE) / 2.0 + (y + 0.5) * TILE_SIZE);
-    	
-        System.out.println("Row: " + z);
+        int corner_y = (int) (-(this.y * TILE_SIZE) / 2.0 + (y + 0.5) * TILE_SIZE); 
 
         color = !redturn  ? Color.rgb(200, 0, 0, 0.9) : Color.rgb(200, 200, 50, 0.9);
         transparentColor = !redturn ? Color.rgb(200, 0, 0, 0.3) : Color.rgb(200, 200, 50, 0.3);

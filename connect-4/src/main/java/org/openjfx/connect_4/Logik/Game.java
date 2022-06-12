@@ -1,7 +1,9 @@
 package org.openjfx.connect_4.Logik;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 import org.openjfx.connect_4.Grafik.GameEnvironment;
@@ -30,10 +32,9 @@ public class Game {
 	
 	private GameStage currentStage;
 	
-	private Move latestMove;
-	private Move secondLatestMove;
-	
 	private int rating;
+	
+	private CopyOnWriteArrayList <Move> valideMoves;
 	
 	public enum GameStage {
 		GAME_NOT_ENDED, RED_WIN, YELLOW_WIN, DRAW
@@ -64,7 +65,7 @@ public class Game {
 		
 		this.playerRed = playerRed;
 		this.playerYellow = playerYellow;
-		
+
 		init(x, y, z, playerRed, playerYellow);
 	}
 	
@@ -80,7 +81,7 @@ public class Game {
 		playerRed.setGame(this); // set the players games to this one
 		playerYellow.setGame(this);
 		
-		rating = 0;
+		setRating(0);
 		
 		setCurrentPlayer(playerRed);
 		currentStage = GameStage.GAME_NOT_ENDED;
@@ -100,12 +101,21 @@ public class Game {
 			}
 		}
 		
+		valideMoves = new CopyOnWriteArrayList<Move>();
+		
+		for(int i = 0; i < this.x; i++) {
+			for(int j = 0; j < this.y; j++) {
+				getValideMoves().add(new Move(i, j));
+			}
+		}
+		
 		redTurn = true; // red moves first
+		rating = 0;
 	}
 	
 	/**
 	 * führt einen übergebenen Move aus
-	 * @param move: der auszuführende Move
+	 * @param 	move: der auszuführende Move
 	 * @return 	true: Der auszuführende Move wurde akzeptiert und ist zulässig
 	 * 			false: Der auszuführende Move ist unzulässig
 	 */
@@ -113,19 +123,38 @@ public class Game {
 		if(isValide(move)) {
 			int x = move.getX(), y = move.getY(), z = heights[x][y];
 			
-			board[x][y][z] = redTurn ? Token.RED : Token.YELLOW; // setze den Token
+			board[x][y][z] = isRedTurn() ? Token.RED : Token.YELLOW; // setze den Token
 			heights[x][y]++; // Erhöhe die Höhe um 1
+			
+			if(heights[x][y] == this.z) getValideMoves().removeIf(removedMove -> removedMove.getX() == x && removedMove.getY() == y);
 			
 			updateGameStage(move); // aktualisiere den Spielstatus
 			
 			redTurn = !redTurn; // der andere Spieler ist jetzt am Zug
-			setCurrentPlayer(redTurn ? getPlayerRed() : playerYellow);
-			
-			System.out.println(rating);
+			setCurrentPlayer(redTurn ? playerRed : playerYellow);
 			
 			return true;
 		}
 		return false;
+	}
+	
+	public void undoMove(Move move, int rating) {
+		int x = move.getX(), y = move.getY();
+		
+		if(heights[x][y] == this.z) getValideMoves().add(move);
+		
+		heights[x][y]--; // Erhöhe die Höhe um 1
+		
+		int z = heights[x][y];
+		
+		board[x][y][z] = Token.NONE;
+		
+		currentStage = GameStage.GAME_NOT_ENDED;
+		
+		this.rating = rating;
+		
+		redTurn = !redTurn; // der andere Spieler ist jetzt am Zug
+		setCurrentPlayer(redTurn ? playerRed : playerYellow);
 	}
 	
 	/**
@@ -150,12 +179,12 @@ public class Game {
 	 */
 	public boolean updateGameStage(Move move) {
 		if(!updateRating(move)) {
-			if(rating == 1000) {
+			if(rating == 10000) {
 				currentStage = GameStage.RED_WIN;
-				System.out.println("Red wins");
-			} else {
+				//System.out.println("Red wins");
+			} else if(rating == -10000) {
 				currentStage = GameStage.YELLOW_WIN;
-				System.out.println("Yellow wins");
+				//System.out.println("Yellow wins");
 			}
 			return false;
 		}
@@ -164,24 +193,80 @@ public class Game {
 	
 	public boolean updateRating(Move move) {
 		List<List<Token>> rows = getRows(move);
-		Token currentToken = redTurn ? Token.RED : Token.YELLOW; 
+		Token friendlyToken = redTurn ? Token.RED : Token.YELLOW; 
+		Token enemyToken = !redTurn ? Token.RED : Token.YELLOW;
 		
-		rows.forEach(row -> {
+		int sign = redTurn ? 1 : -1;
+		
+		int height = heights[move.getX()][move.getY()] - 1; // already updated
+		
+		if(height == 0) rating += sign * 2; // Züge weiter unten führen kurzfristig zu mehr Chancen
+		else if(height == 1) rating += sign;
+		
+		for(List<Token> row : rows) {
 			int tokenCounter = 0;
+			int enemyTokenCounter = 0;
+			
 			int n = row.size();
 			
-			//System.out.println("size: " + n);
+			int twoRows = 0;
+			int threeRows = 0;
 			
-			for(int i = 0; i < n; i++) {
-				if(row.get(i).equals(currentToken)) {
+			for(int i = 0; i < winningLength; i++) {
+				Token currentToken = row.get(i);
+				if(currentToken.equals(friendlyToken)) {
 					tokenCounter++;
-					if(tokenCounter == winningLength) rating = redTurn ? 1000 : -1000; // either player wins
+				} else if(currentToken.equals(enemyToken)) {
+					enemyTokenCounter++;
 				}
-				else tokenCounter = 0;
 			}
-		});
+			
+			if(tokenCounter == winningLength) {rating = sign * 10000; break;}
+			else if(tokenCounter == 1) {
+				if(enemyTokenCounter == 3) threeRows++; // gegnerische 3er / 2er Reihe blockiert
+				else if(enemyTokenCounter == 2) twoRows++;
+			}
+			else if(enemyTokenCounter == 0) {
+				if(tokenCounter == 3) {
+					threeRows++; // 3er / 2er Reihe erstellt
+					twoRows--;
+				} else if(tokenCounter == 2) twoRows++;
+			}
+			
+			for(int i = winningLength; i < n; i++) {
+				Token currentToken = row.get(i);
+				if(currentToken.equals(friendlyToken)) {
+					tokenCounter++;
+				} else if(currentToken.equals(enemyToken)) {
+					enemyTokenCounter++;
+				}
+				
+				currentToken = row.get(i - winningLength);
+				
+				if(currentToken.equals(friendlyToken)) { // viert-letzter Token soll nicht mehr betrachtet werden
+					tokenCounter--;
+				} else if(currentToken.equals(enemyToken)) {
+					enemyTokenCounter--;
+				}
+				
+				if(tokenCounter == winningLength) {rating = sign * 10000; break;}
+				else if(tokenCounter == 1) {
+					if(enemyTokenCounter == 3) threeRows++; // gegnerische 3er / 2er Reihe blockiert
+					else if(enemyTokenCounter == 2) twoRows++;
+				}
+				else if(enemyTokenCounter == 0) {
+					if(tokenCounter == 3) {
+						threeRows++; // 3er / 2er Reihe erstellt
+						twoRows--;
+					} else if(tokenCounter == 2) twoRows++;
+				}
+			}
+			
+			rating += sign * twoRows * 2;
+			rating += sign * threeRows * 8;
+		}
 		
-		if(rating == 1000 || rating == -1000) {
+		if(rating == 10000 || rating == -10000) {
 			return false; // the rating has been updated so that there is either a win or a loss
 		}
 		
@@ -196,10 +281,10 @@ public class Game {
 	public List<List<Token>> getRows(Move move) {
 		List<List<Token>> rows = new ArrayList();
 		
-		for(int x = -1; x <= 0; x++) {
-			for(int y = -1; y <= 0; y++) {
-				for(int z = -1; z <= 0; z++) {
-					if(x == 0 && y == 0 && z == 0) continue; // at least one index needs to change
+		for(int x = -1; x <= 1; x++) {
+			for(int y = -1; y <= 1; y++) {
+				for(int z = -1; z <= 1; z++) {
+					if(x == 0 && y == 0 && z == 0) break; // at least one index needs to change
 					
 					int leftBoarder = winningLength - 1;
 					int rightBoarder = winningLength - 1;
@@ -264,8 +349,9 @@ public class Game {
     	playerRed.setGame(game);
     	playerYellow.setGame(game);
     	
+    	// wird aufgerufen, falls man in dem UI einen Token platziert
     	Consumer<Move> placeTokenHandler = move -> {
-    		if(game.redTurn) {
+    		if(game.isRedTurn()) {
     			playerRed.setMove(move);
     	        synchronized(playerRed) {
     	        	playerRed.notify();
@@ -283,16 +369,18 @@ public class Game {
     	
         Thread thread = new Thread() {
         	public void run() {
+        		System.out.println(game);
+        		
 		    	while(game.getCurrentGameStage().equals(GameStage.GAME_NOT_ENDED)) {
 	    			try {
-						Thread.currentThread().sleep(50); // leichte Verz�gerung andernfalls ist es möglich, dass der vorherige Zug nicht vollständig ausgeführt wurde
+						Thread.currentThread().sleep(50); // leichte Verz�gerung andernfalls ist es möglich, dass der vorherige Zug nicht vollständig ausgeführt wurde
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 	    			
 		    		Move move;
 		    		do {
-			    		if(game.redTurn) {
+			    		if(game.isRedTurn()) {
 			    			move = playerRed.getMove();
 			    		} else {
 			    			move = playerYellow.getMove();
@@ -304,10 +392,15 @@ public class Game {
 		    		final int y = move.getY();
 		    		
 		    		Platform.runLater(() -> gameEnvironment.placeToken(
-		    				new org.openjfx.connect_4.Grafik.Token(game.redTurn ? false : true, GameEnvironment.TILE_SIZE / 2), x,
+		    				new org.openjfx.connect_4.Grafik.Token(game.isRedTurn() ? false : true, GameEnvironment.TILE_SIZE / 2), x,
 		    				y, game.heights[x][y] - 1));
 		    		
 		    		System.out.println(game);
+		    	}
+		    	if(game.getCurrentGameStage().equals(GameStage.RED_WIN)) {
+		    		System.out.println("red wins");
+		    	} else {
+		    		System.out.println("yellow wins");
 		    	}
         	}
         };
@@ -317,7 +410,8 @@ public class Game {
 	
 	@Override
 	public String toString() {
-		String toString = (redTurn ? "Rot" : "Gelb") + " ist am Zug\n";
+		String toString = (isRedTurn() ? "Rot" : "Gelb") + " ist am Zug\n";
+		toString += "Rating: " + rating + "\n";
 		
         for(int i = 0; i < z; i++) {
             for(int j = 0; j < x; j++) {
@@ -359,5 +453,21 @@ public class Game {
 
 	public Player getPlayerYellow() {
 		return playerYellow;
+	}
+
+	public int getRating() {
+		return rating;
+	}
+
+	public void setRating(int rating) {
+		this.rating = rating;
+	}
+
+	public boolean isRedTurn() {
+		return redTurn;
+	}
+
+	public List<Move> getValideMoves() {
+		return valideMoves;
 	}
 }

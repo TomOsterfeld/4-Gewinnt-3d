@@ -10,7 +10,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.connect_4.StartMenuController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/18"
+ 			xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.connect_4.StartMenuController" stylesheets="@startMenu.css">
    <children>
       <HBox alignment="CENTER_LEFT" layoutX="88.0" layoutY="115.0" prefHeight="400.0" prefWidth="1005.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -22,18 +23,18 @@
                      <children>
                         <SplitMenuButton mnemonicParsing="false" prefHeight="34.0" prefWidth="142.0" text="Player 1" fx:id="playerButton1">
                           <items>
-                            <MenuItem mnemonicParsing="false" text="Local Game"/>
-                            <MenuItem mnemonicParsing="false" text="Computer Game"/>
-                            <MenuItem mnemonicParsing="false" text="Random Game"/>
-                            <MenuItem mnemonicParsing="false" text="Console Game"/>
+                            <MenuItem mnemonicParsing="false" text="Local Player"/>
+                            <MenuItem mnemonicParsing="false" text="Computer Player"/>
+                            <MenuItem mnemonicParsing="false" text="Random Player"/>
+                            <MenuItem mnemonicParsing="false" text="Console Player"/>
                           </items>
                         </SplitMenuButton>
                         <SplitMenuButton mnemonicParsing="false" prefHeight="35.0" prefWidth="150.0" text="Player 2" fx:id="playerButton2">
                           <items>
-                            <MenuItem mnemonicParsing="false" text="Local Game"/>
-                            <MenuItem mnemonicParsing="false" text="Computer Game"/>
-                            <MenuItem mnemonicParsing="false" text="Random Game"/>
-                            <MenuItem mnemonicParsing="false" text="Console Game"/>
+                            <MenuItem mnemonicParsing="false" text="Local Player" />
+                            <MenuItem mnemonicParsing="false" text="Computer Player"/>
+                            <MenuItem mnemonicParsing="false" text="Random Player"/>
+                            <MenuItem mnemonicParsing="false" text="Console Player"/>
                           </items>
                         </SplitMenuButton>
                      </children>
