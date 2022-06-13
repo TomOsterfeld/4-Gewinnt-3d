@@ -90,6 +90,7 @@ public class GameEnvironment {
 		globalRoot.getChildren().add(scene_3D);
 		globalRoot.getChildren().add(createTokenSymbolYellow());
 		globalRoot.getChildren().add(createTokenSymbolRed());
+		
 		 
 		 
 		scene = new Scene(globalRoot);

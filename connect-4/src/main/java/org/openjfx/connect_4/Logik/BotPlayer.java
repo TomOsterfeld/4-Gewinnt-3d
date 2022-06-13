@@ -14,23 +14,33 @@ public class BotPlayer extends Player {
 	private boolean safeWin;
 	private long startTime;
 	private Move bestMove;
+	
+	private long timeOut = 1000;
 
 	@Override
 	public Move getMove() {
 		startTime = System.currentTimeMillis();
-		currentDepth = 7;
+		currentDepth = 2;
 		
-		
-		if(game.isRedTurn()) {
-			System.out.println("Predicted Rating: " + maximize(currentDepth, Integer.MIN_VALUE, Integer.MAX_VALUE));
-		} else {
-			System.out.println("Predicted Rating: " + minimize(currentDepth, Integer.MIN_VALUE, Integer.MAX_VALUE));
+		try {
+			while(true) {
+				if(game.isRedTurn()) {
+					System.out.println("Predicted Rating: " + maximize(currentDepth, Integer.MIN_VALUE, Integer.MAX_VALUE));
+				} else {
+					System.out.println("Predicted Rating: " + minimize(currentDepth, Integer.MIN_VALUE, Integer.MAX_VALUE));
+				}
+				currentDepth++;
+				
+			}
+		} catch(TimeOutException exc) {
+			//exc.printStackTrace();
+			return bestMove;
 		}
 		
 		return bestMove;
 	}
 	
-	private int maximize(int depth, int alpha, int beta) {
+	private int maximize(int depth, int alpha, int beta) throws TimeOutException {
 		int maxEval = Integer.MIN_VALUE;
 		int rating = game.getRating();
 		
@@ -38,6 +48,8 @@ public class BotPlayer extends Player {
 			return rating;
 		
 		for(Move move : game.getValideMoves()) {
+			if(System.currentTimeMillis() > startTime + 10000) continue;
+			
 			game.doMove(move);
 			int eval = minimize(depth - 1, alpha, beta);
 			game.undoMove(move, rating);

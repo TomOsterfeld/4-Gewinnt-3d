@@ -109,6 +109,8 @@ public class Game {
 			}
 		}
 		
+		presortValideMoves();
+		
 		redTurn = true; // red moves first
 		rating = 0;
 	}
@@ -406,6 +408,26 @@ public class Game {
         };
         
         thread.start();
+	}
+	
+	/**
+	 * 
+	 */
+	public void presortValideMoves() {
+		// jeder Move bekommt als Rating die Anzahl der Möglichen durch ihn verursachten 4er Reihen
+		for(int i = 0; i < valideMoves.size(); i++) {
+			Move move = valideMoves.get(i);
+			List<List<Move>> rows = getRows(move);
+			int rating = 0;
+			for(int j = 0; j < rows.size(); j++) {
+				List<Move> row = rows.get(j);
+				rating += row.size() - winningLength;
+			}
+			move.setRating(rating);
+			System.out.println(rating);
+		}
+		
+		//valideMoves.sort((move1, move2) -> move1.getRating() > move2.getRating());
 	}
 	
 	@Override
