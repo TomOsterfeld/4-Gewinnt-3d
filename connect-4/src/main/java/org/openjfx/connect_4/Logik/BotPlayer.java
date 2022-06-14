@@ -14,19 +14,49 @@ public class BotPlayer extends Player {
 	private boolean safeWin;
 	private long startTime;
 	private Move bestMove;
+	List<Move> valideMoves;
+	
+	private long timeOut = 2000;
 
 	@Override
 	public Move getMove() {
 		startTime = System.currentTimeMillis();
-		currentDepth = 7;
+		currentDepth = 1;
 		
+		valideMoves = game.getValideMoves();
 		
-		if(game.isRedTurn()) {
-			System.out.println("Predicted Rating: " + maximize(currentDepth, Integer.MIN_VALUE, Integer.MAX_VALUE));
-		} else {
-			System.out.println("Predicted Rating: " + minimize(currentDepth, Integer.MIN_VALUE, Integer.MAX_VALUE));
+		Move bestMove = valideMoves.get(0);
+		
+		while(!timeOut()) {
+			if(this.bestMove != null) { // der vorherige beste Move wird lokal gespeichert und an den Beginn der Liste gesetzt
+				bestMove = this.bestMove;
+				game.getValideMoves().remove(bestMove);
+				game.getValideMoves().add(0, bestMove);
+			}
+			
+			if(safeWin) break;
+			
+			int rating;
+			
+			if(game.isRedTurn()) {
+				rating = maximize(currentDepth, Integer.MIN_VALUE, Integer.MAX_VALUE);
+				if(rating == 10000) safeWin = true;
+				else if(rating == -10000) break; // garantierte Niederlage
+			} else {
+				rating = minimize(currentDepth, Integer.MIN_VALUE, Integer.MAX_VALUE);
+				if(rating == -10000) safeWin = true;
+				else if(rating == 10000) break;
+			}
+			
+			System.out.println("Predicted Rating: " + rating
+					+ " for Depth " + currentDepth + (timeOut()? " (timeout)" : "")
+					+ " after " + (System.currentTimeMillis() - startTime) / 1000.0 + "s");
+			
+			currentDepth++;
 		}
 		
+		this.bestMove = null;
+		safeWin = false;
 		return bestMove;
 	}
 	
@@ -37,10 +67,14 @@ public class BotPlayer extends Player {
 		if(!game.getCurrentGameStage().equals(GameStage.GAME_NOT_ENDED) || depth == 0)
 			return rating;
 		
-		for(Move move : game.getValideMoves()) {
+		for(int i = 0; i < game.getValideMoves().size(); i++) {
+			if(timeOut()) break;
+			
+			Move move = game.getValideMoves().get(i);
+			
 			game.doMove(move);
 			int eval = minimize(depth - 1, alpha, beta);
-			game.undoMove(move, rating);
+			game.undoMove(move, rating, i);
 			
 			if(eval > maxEval) {
 				maxEval = eval;
@@ -63,10 +97,14 @@ public class BotPlayer extends Player {
 		if(!game.getCurrentGameStage().equals(GameStage.GAME_NOT_ENDED) || depth == 0)
 			return rating;
 		
-		for(Move move : game.getValideMoves()) {
+		for(int i = 0; i < game.getValideMoves().size(); i++) {
+			if(timeOut()) break;
+		
+			Move move = game.getValideMoves().get(i);
+			
 			game.doMove(move);
 			int eval = maximize(depth - 1, alpha, beta);
-			game.undoMove(move, rating);
+			game.undoMove(move, rating, i);
 			
 			if(eval < minEval) {
 				minEval = eval;
@@ -80,6 +118,10 @@ public class BotPlayer extends Player {
 		}
 		
 		return minEval;
+	}
+	
+	private boolean timeOut() {
+		return System.currentTimeMillis() > startTime + timeOut;
 	}
 	
 	@Override

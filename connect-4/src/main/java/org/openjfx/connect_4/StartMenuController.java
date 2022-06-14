@@ -61,9 +61,10 @@ public class StartMenuController {
 				player2 = new ConsolePlayer(); break;
 			default: 
 				player2 = new LocalPlayer();
-    	} 
+    	}
     	
-    	Game game = new Game(30, 30, 15, 20, player1, player2);
+    	Game game = new Game(5, 5, 4, 4, player1, player2);
+    	
     	Game.startGame(game);
     }
     

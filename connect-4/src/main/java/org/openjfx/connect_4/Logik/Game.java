@@ -105,9 +105,11 @@ public class Game {
 		
 		for(int i = 0; i < this.x; i++) {
 			for(int j = 0; j < this.y; j++) {
-				getValideMoves().add(new Move(i, j));
+				valideMoves.add(new Move(i, j));
 			}
 		}
+		
+		presortValideMoves();
 		
 		redTurn = true; // red moves first
 		rating = 0;
@@ -126,7 +128,8 @@ public class Game {
 			board[x][y][z] = isRedTurn() ? Token.RED : Token.YELLOW; // setze den Token
 			heights[x][y]++; // Erhöhe die Höhe um 1
 			
-			if(heights[x][y] == this.z) getValideMoves().removeIf(removedMove -> removedMove.getX() == x && removedMove.getY() == y);
+			if(heights[x][y] == this.z) 
+				getValideMoves().removeIf(removedMove -> removedMove.getX() == x && removedMove.getY() == y);
 			
 			updateGameStage(move); // aktualisiere den Spielstatus
 			
@@ -138,10 +141,10 @@ public class Game {
 		return false;
 	}
 	
-	public void undoMove(Move move, int rating) {
+	public void undoMove(Move move, int rating, int position) {
 		int x = move.getX(), y = move.getY();
 		
-		if(heights[x][y] == this.z) getValideMoves().add(move);
+		if(heights[x][y] == this.z) getValideMoves().add(position, move);
 		
 		heights[x][y]--; // Erhöhe die Höhe um 1
 		
@@ -192,7 +195,7 @@ public class Game {
 	}
 	
 	public boolean updateRating(Move move) {
-		List<List<Token>> rows = getRows(move);
+		List<List<Token>> rows = getRows(move, heights[move.getX()][move.getY()] - 1);
 		Token friendlyToken = redTurn ? Token.RED : Token.YELLOW; 
 		Token enemyToken = !redTurn ? Token.RED : Token.YELLOW;
 		
@@ -266,7 +269,7 @@ public class Game {
 			rating += sign * threeRows * 8;
 		}
 		
-		if(rating == 10000 || rating == -10000) {
+		if(rating >= 10000 || rating <= -10000) {
 			return false; // the rating has been updated so that there is either a win or a loss
 		}
 		
@@ -278,7 +281,7 @@ public class Game {
 	 * @param move
 	 * @return
 	 */
-	public List<List<Token>> getRows(Move move) {
+	public List<List<Token>> getRows(Move move, int move_z) {
 		List<List<Token>> rows = new ArrayList();
 		
 		for(int x = -1; x <= 1; x++) {
@@ -289,7 +292,7 @@ public class Game {
 					int leftBoarder = winningLength - 1;
 					int rightBoarder = winningLength - 1;
 					
-					int move_x = move.getX(), move_y = move.getY(), move_z = heights[move_x][move_y] - 1;
+					int move_x = move.getX(), move_y = move.getY();
 					
 					if(x != 0) {
 						if(x == 1) {
@@ -373,7 +376,7 @@ public class Game {
         		
 		    	while(game.getCurrentGameStage().equals(GameStage.GAME_NOT_ENDED)) {
 	    			try {
-						Thread.currentThread().sleep(25); // leichte Verz�gerung andernfalls ist es möglich, dass der vorherige Zug nicht vollständig ausgeführt wurde
+						Thread.currentThread().sleep(50); // leichte Verz�gerung andernfalls ist es möglich, dass der vorherige Zug nicht vollständig ausgeführt wurde
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -406,6 +409,31 @@ public class Game {
         };
         
         thread.start();
+	}
+	
+	/**
+	 * 
+	 */
+	public void presortValideMoves() {
+		// jeder Move bekommt als Rating die Anzahl der M�glichen durch ihn verursachten 4er Reihen
+		for(int i = 0; i < valideMoves.size(); i++) {
+			Move move = valideMoves.get(i);
+			List<List<Token>> rows = getRows(move, 0);
+			int rating = 0;
+			for(int j = 0; j < rows.size(); j++) {
+				List<Token> row = rows.get(j);
+				rating += row.size() - winningLength + 1; // Anzahl möglicher vierer Reihen
+			}
+			move.setRating(rating);
+		}
+		
+		valideMoves.sort((move1, move2) -> (move1.getRating() < move2.getRating()) ? 1 : -1); // sortiere moves nach rating absteigend
+	}
+	
+	public List<int[][][]> getWinningTokens() {
+		List<int[][][]> tokens = new ArrayList();
+		
+		return tokens;
 	}
 	
 	@Override

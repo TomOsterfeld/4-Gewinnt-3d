@@ -90,6 +90,7 @@ public class GameEnvironment {
 		globalRoot.getChildren().add(scene_3D);
 		globalRoot.getChildren().add(createTokenSymbolYellow());
 		globalRoot.getChildren().add(createTokenSymbolRed());
+		
 		 
 		 
 		scene = new Scene(globalRoot);
@@ -173,6 +174,17 @@ public class GameEnvironment {
         token.mouseTransparentProperty().set(true);
         
         redturn = !redturn;
+    }
+    
+    public void markTokens(List<int[]> tokens) {
+    	tokens.forEach(point3d -> {
+    		int x = point3d[0];
+    		int y = point3d[1];
+    		int z = point3d[2];
+    		if(x < 0 || x >= this.x || y < 0 || y >= this.y || z < 0 || y >= this.z || grid[x][y][z] == null)
+    			return;
+    		grid[x][y][z].makeTransparent();
+    	});
     }
 	
 	private SmartGroup createContent() {
