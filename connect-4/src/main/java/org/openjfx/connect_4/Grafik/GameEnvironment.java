@@ -364,6 +364,67 @@ public class GameEnvironment {
     	light3.translateZProperty().set(-TILE_SIZE * y);
     	return List.of(light, light1, light2, light3);
     }
+    
+    public void markWinningRows(Move move, int move_z, int winningLength) {
+    	boolean redTurn = grid[move.getX()][move.getY()][move_z].;
+    	
+		for(int x = -1; x <= 1; x++) {
+			for(int y = -1; y <= 1; y++) {
+				for(int z = -1; z <= 1; z++) {
+					if(x == 0 && y == 0 && z == 0) break; // at least one index needs to change
+					
+					int leftBoarder = winningLength - 1;
+					int rightBoarder = winningLength - 1;
+					
+					int move_x = move.getX(), move_y = move.getY();
+					
+					if(x != 0) {
+						if(x == 1) {
+							leftBoarder = Math.min(leftBoarder, move_x);
+							rightBoarder = Math.min(rightBoarder, this.x - move_x - 1);
+						} else {
+							leftBoarder = Math.min(leftBoarder, this.x - move_x - 1);
+							rightBoarder = Math.min(rightBoarder, move_x);
+						}
+					}
+					
+					if(y != 0) {
+						if(y == 1) {
+							leftBoarder = Math.min(leftBoarder, move_y);
+							rightBoarder = Math.min(rightBoarder, this.y - move_y - 1);
+						} else {
+							leftBoarder = Math.min(leftBoarder, this.y - move_y - 1);
+							rightBoarder = Math.min(rightBoarder, move_y);
+						}
+					}
+					
+					if(z != 0) {
+						if(z == 1) {
+							leftBoarder = Math.min(leftBoarder, move_z);
+							rightBoarder = Math.min(rightBoarder, this.z - move_z - 1);
+						} else {
+							leftBoarder = Math.min(leftBoarder, this.z - move_z - 1);
+							rightBoarder = Math.min(rightBoarder, move_z);
+						}
+					}
+					
+					int rowLength = rightBoarder + leftBoarder + 1;
+					
+					if(rowLength < winningLength) continue; // row not long enough
+					
+					int _x = move_x - x * leftBoarder;
+					int _y = move_y - y * leftBoarder;
+					int _z = move_z - z * leftBoarder;
+					
+					int counter = 0;
+					
+					for(int i = 0; i < rowLength; _x += x, _y += y, _z += z, i++) {
+						
+					}
+				}
+			}
+		}
+    }
 	
     public Scene getScene() {
 		return scene;

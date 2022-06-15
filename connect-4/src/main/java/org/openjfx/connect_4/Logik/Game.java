@@ -430,8 +430,34 @@ public class Game {
 		valideMoves.sort((move1, move2) -> (move1.getRating() < move2.getRating()) ? 1 : -1); // sortiere moves nach rating absteigend
 	}
 	
-	public List<int[][][]> getWinningTokens() {
+	public List<int[][][]> getWinningTokens(Move move) {
 		List<int[][][]> tokens = new ArrayList();
+		
+		int x = move.getX();
+		int y = move.getY();
+		int z = heights[x][y] - 1;
+		
+		List<List<Token>> rows = getRows(move, z);
+		Token winningToken = board[x][y][z];
+		
+		for(List<Token> row : rows) {
+			int counter = 0;
+			
+			for(int i = 0; i < row.size(); i++) {
+				if(row.get(i).equals(winningToken)) {
+					counter++;
+				} else {
+					if(counter >= 4) {
+						for(int j = i; j >= j - counter; j--) {						}
+							int _x = row.get(j).getX();
+							int _y = row.get(j).getY();
+							tokens.add(new int[]{row.get(i));
+						}
+					}
+					counter = 0;
+				}
+			}
+		}
 		
 		return tokens;
 	}
