@@ -48,4 +48,9 @@ public class Token extends Sphere {
         this.setCullFace(CullFace.BACK);
         transparent = false;
     }
+
+	public boolean getRed() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

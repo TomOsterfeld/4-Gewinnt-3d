@@ -366,7 +366,9 @@ public class GameEnvironment {
     }
     
     public void markWinningRows(Move move, int move_z, int winningLength) {
-    	boolean redTurn = grid[move.getX()][move.getY()][move_z].;
+    	boolean redTurn = true;
+    			
+    	//grid[move.getX()][move.getY()][move_z].getRed();
     	
 		for(int x = -1; x <= 1; x++) {
 			for(int y = -1; y <= 1; y++) {
@@ -419,8 +421,34 @@ public class GameEnvironment {
 					int counter = 0;
 					
 					for(int i = 0; i < rowLength; _x += x, _y += y, _z += z, i++) {
-						
+						if(grid[_x][_y][_z] != null && (true || grid[_x][_y][_z].getRed() == redTurn)) {
+							grid[_x][_y][_z].makeTransparent();
+							counter++;
+						} else {
+							if(counter >= winningLength) {
+								System.out.println(counter);
+								int __x = _x, __y = _y, __z = _z;
+								for(; counter-- > 0; __x -= x, __y -= y, __z -= z) {
+									if(grid[__x][__y][__z] != null) {
+										grid[__x][__y][__z].makeTransparent();
+									}
+								}
+								counter = 0;
+							}
+						}
 					}
+					
+					/*
+					if(counter >= winningLength) {
+						System.out.println(counter);
+						int __x = _x, __y = _y, __z = _z;
+						for(; counter-- > 0; __x -= x, __y -= y, __z -= z) {
+							if(grid[__x][__y][__z] != null) {
+								grid[__x][__y][__z].makeTransparent();
+							}
+						}
+					}
+					*/
 				}
 			}
 		}

@@ -345,16 +345,18 @@ public class Game {
 		return rows;
 	}
 	
-	public static void startGame(Game game) {
-    	Player playerRed = game.getPlayerRed();
-    	Player playerYellow = game.getPlayerYellow();
+	public void startGame() {
+		Game game = this;
+		
+    	Player playerRed = getPlayerRed();
+    	Player playerYellow = getPlayerYellow();
     	
-    	playerRed.setGame(game);
-    	playerYellow.setGame(game);
+    	playerRed.setGame(this);
+    	playerYellow.setGame(this);
     	
     	// wird aufgerufen, falls man in dem UI einen Token platziert
     	Consumer<Move> placeTokenHandler = move -> {
-    		if(game.isRedTurn()) {
+    		if(this.isRedTurn()) {
     			playerRed.setMove(move);
     	        synchronized(playerRed) {
     	        	playerRed.notify();
@@ -367,43 +369,45 @@ public class Game {
     		}
     	};
     	
-    	GameEnvironment gameEnvironment = new GameEnvironment(game.x, game.y, game.z, placeTokenHandler);
+    	GameEnvironment gameEnvironment = new GameEnvironment(this.x, this.y, this.z, placeTokenHandler);
         SceneController.switchScene("GAME_ENVIRONMENT", gameEnvironment.getScene()); //TODO: there might be several gameEnvironments
     	
         Thread thread = new Thread() {
         	public void run() {
         		System.out.println(game);
         		
-		    	while(game.getCurrentGameStage().equals(GameStage.GAME_NOT_ENDED)) {
+        		Move move = new Move(0, 0);
+        		
+		    	while(getCurrentGameStage().equals(GameStage.GAME_NOT_ENDED)) {
 	    			try {
 						Thread.currentThread().sleep(50); // leichte Verz�gerung andernfalls ist es möglich, dass der vorherige Zug nicht vollständig ausgeführt wurde
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 	    			
-		    		Move move;
 		    		do {
-			    		if(game.isRedTurn()) {
+			    		if(isRedTurn()) {
 			    			move = playerRed.getMove();
 			    		} else {
 			    			move = playerYellow.getMove();
 			    		}
-		    		} while(!game.isValide(move));
-		    		game.doMove(move);
+		    		} while(!isValide(move));
+		    		doMove(move);
 		    		
 		    		final int x = move.getX();
 		    		final int y = move.getY();
 		    		
 		    		Platform.runLater(() -> gameEnvironment.placeToken(
-		    				new org.openjfx.connect_4.Grafik.Token(game.isRedTurn() ? false : true, GameEnvironment.TILE_SIZE / 2), x,
-		    				y, game.heights[x][y] - 1));
+		    				new org.openjfx.connect_4.Grafik.Token(isRedTurn() ? false : true, GameEnvironment.TILE_SIZE / 2), x,
+		    				y, heights[x][y] - 1));
 		    		
 		    		System.out.println(game);
 		    	}
-		    	if(game.getCurrentGameStage().equals(GameStage.RED_WIN)) {
-		    		System.out.println(game.getPlayerRed() + " (red) wins");
+		    	if(getCurrentGameStage().equals(GameStage.RED_WIN)) {
+		    		System.out.println(getPlayerRed() + " (red) wins");
+		    		gameEnvironment.markWinningRows(new Move(0, 0), 0, winningLength);
 		    	} else {
-		    		System.out.println(game.getPlayerYellow() + " (yellow) wins");
+		    		System.out.println(getPlayerYellow() + " (yellow) wins");
 		    	}
         	}
         };
@@ -430,6 +434,7 @@ public class Game {
 		valideMoves.sort((move1, move2) -> (move1.getRating() < move2.getRating()) ? 1 : -1); // sortiere moves nach rating absteigend
 	}
 	
+	/*
 	public List<int[][][]> getWinningTokens(Move move) {
 		List<int[][][]> tokens = new ArrayList();
 		
@@ -461,6 +466,7 @@ public class Game {
 		
 		return tokens;
 	}
+	*/
 	
 	@Override
 	public String toString() {

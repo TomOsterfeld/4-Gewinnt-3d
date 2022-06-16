@@ -65,7 +65,7 @@ public class StartMenuController {
     	
     	Game game = new Game(5, 5, 4, 4, player1, player2);
     	
-    	Game.startGame(game);
+    	game.startGame();
     }
     
     @FXML
