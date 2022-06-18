@@ -372,8 +372,11 @@ public class GameEnvironment {
     	return List.of(light, light1, light2, light3);
     }
     
+    /**
+     * @author Kevin
+     * @return
+     */
 	private Group createGewinnScreen() {
-		
 		Group root = new Group();
 		
 		String restart = "restart";
@@ -415,6 +418,10 @@ public class GameEnvironment {
 		return root;
 	}
 	
+	/**
+	 * @author: Endrit
+	 * @return
+	 */
     private Group createGameClocks() {
     	Group createGameClocks = new Group();
     	
