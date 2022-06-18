@@ -369,7 +369,7 @@ public class Game {
     		}
     	};
     	
-    	GameEnvironment gameEnvironment = new GameEnvironment(this.x, this.y, this.z, placeTokenHandler);
+    	GameEnvironment gameEnvironment = new GameEnvironment(this.x, this.y, this.z, this.winningLength, placeTokenHandler);
         SceneController.switchScene("GAME_ENVIRONMENT", gameEnvironment.getScene()); //TODO: there might be several gameEnvironments
     	
         Thread thread = new Thread() {
@@ -380,13 +380,13 @@ public class Game {
         		
 		    	while(getCurrentGameStage().equals(GameStage.GAME_NOT_ENDED)) {
 	    			try {
-						Thread.currentThread().sleep(50); // leichte Verz�gerung andernfalls ist es möglich, dass der vorherige Zug nicht vollständig ausgeführt wurde
+						this.sleep(50); // leichte Verz�gerung andernfalls ist es möglich, dass der vorherige Zug nicht vollständig ausgeführt wurde
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 	    			
 		    		do {
-			    		if(isRedTurn()) {
+			    		if(redTurn) {
 			    			move = playerRed.getMove();
 			    		} else {
 			    			move = playerYellow.getMove();
@@ -397,17 +397,18 @@ public class Game {
 		    		final int x = move.getX();
 		    		final int y = move.getY();
 		    		
-		    		Platform.runLater(() -> gameEnvironment.placeToken(
-		    				new org.openjfx.connect_4.Grafik.Token(isRedTurn() ? false : true, GameEnvironment.TILE_SIZE / 2), x,
+		    		Platform.runLater(() -> gameEnvironment.placeToken( // setze Token im 3D-Spiel
+		    				new org.openjfx.connect_4.Grafik.Token(redTurn ? false : true, GameEnvironment.TILE_SIZE / 2), x,
 		    				y, heights[x][y] - 1));
 		    		
 		    		System.out.println(game);
 		    	}
 		    	if(getCurrentGameStage().equals(GameStage.RED_WIN)) {
 		    		System.out.println(getPlayerRed() + " (red) wins");
-		    		gameEnvironment.markWinningRows(new Move(0, 0), 0, winningLength);
-		    	} else {
+		    		gameEnvironment.markWinningRows(move, heights[move.getX()][move.getY()] - 1);
+		    	} else if(getCurrentGameStage().equals(GameStage.YELLOW_WIN)) {
 		    		System.out.println(getPlayerYellow() + " (yellow) wins");
+		    		gameEnvironment.markWinningRows(move, heights[move.getX()][move.getY()] - 1);
 		    	}
         	}
         };

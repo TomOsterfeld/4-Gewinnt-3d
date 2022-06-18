@@ -18,6 +18,7 @@ import javafx.scene.PointLight;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
@@ -31,6 +32,7 @@ import javafx.scene.shape.CullFace;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.animation.TranslateTransition;
@@ -45,6 +47,8 @@ import javafx.event.EventHandler;
  */
 public class GameEnvironment {	
 	private final int x, y, z;
+	private final int winningLength;
+	private final int gameLength = 10; // in minutes
 	
 	public static int TILE_SIZE = 90;
 	
@@ -68,10 +72,11 @@ public class GameEnvironment {
 	
 	private Consumer<Move> placeTokenHandler;
 	
-	public GameEnvironment(int x, int y, int z, Consumer<Move> placeTokenHandler) {
+	public GameEnvironment(int x, int y, int z, int winningLength, Consumer<Move> placeTokenHandler) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		this.winningLength = winningLength;
 		this.placeTokenHandler = placeTokenHandler;
 		init();
 	}
@@ -90,8 +95,8 @@ public class GameEnvironment {
 		globalRoot.getChildren().add(scene_3D);
 		globalRoot.getChildren().add(createTokenSymbolYellow());
 		globalRoot.getChildren().add(createTokenSymbolRed());
-		
-		 
+		globalRoot.getChildren().add(createGewinnScreen());
+		globalRoot.getChildren().add(createGameClocks());
 		 
 		scene = new Scene(globalRoot);
 		 
@@ -148,7 +153,7 @@ public class GameEnvironment {
         });
 	}
 	
-    public void placeToken(Token token, int x, int y, int z) {
+    public void placeToken(Token token, int x, int y, int z) {    	
         int corner_x = (int) (-(this.x * TILE_SIZE) / 2.0 + (x + 0.5) * TILE_SIZE);
         int corner_y = (int) (-(this.y * TILE_SIZE) / 2.0 + (y + 0.5) * TILE_SIZE); 
 
@@ -175,6 +180,19 @@ public class GameEnvironment {
         
         redturn = !redturn;
     }
+    
+	private void gewinnAnimation(boolean redWin) {
+	
+		
+	if(redWin == true) {
+		
+	}else {
+		
+	}	
+		
+	
+		
+	}
     
     public void markTokens(List<int[]> tokens) {
     	tokens.forEach(point3d -> {
@@ -236,17 +254,6 @@ public class GameEnvironment {
         	.bind(SceneController.getStage().widthProperty().subtract(20 + 2 * redToken.getRadius())); // x Position muss sich an breite des Panes anpassen
         redToken.setEffect(getLighting());
         return redToken;
-    }
-    
-    private List<Label> createGameClocks() {
-    	Label redClock = new Label("00 : 00");
-    	Label yellowClock = new Label("00 : 00");
-    	
-    	redClock.setFont(null);
-    	
-    	
-    	
-    	return List.of(redClock, yellowClock);
     }
     
     private List<Node> createBoxes() {
@@ -365,23 +372,95 @@ public class GameEnvironment {
     	return List.of(light, light1, light2, light3);
     }
     
-    public void markWinningRows(Move move, int move_z, int winningLength) {
-    	boolean redTurn = true;
+	private Group createGewinnScreen() {
+		
+		Group root = new Group();
+		
+		String restart = "restart";
+		String homescreenstring = "homescreen";
+		
+		Button button = new Button();
+		button.setText(restart);
+		button.setFont(new Font("Calibri",30));
+		button.setTranslateX(90);   //hat am längsten gedauert das rasuzufinden, angeschaut wie es bei gelben token ist
+		button.translateYProperty().bind(SceneController.getStage().heightProperty().divide(2).subtract(50));
+		
+		Label label = new Label("Rot gewinnt"); //Fehler: falsches importiert, L�sung bereits gefunden
+		label.setFont(new Font("Calibri",50));
+		label.translateXProperty().bind(SceneController.getStage().widthProperty().divide(2).subtract(120));
+		label.translateYProperty().bind(SceneController.getStage().heightProperty().divide(2).subtract(50));
+		
+		//.translateXProperty()
+    	//.bind(SceneController.getStage().widthProperty().subtract(20 + 2 * redToken.getRadius()))   kopiert von tom als hilfe für mich
+		
+		Button homescreen = new Button();
+		homescreen.setText(homescreenstring);
+		homescreen.setFont(new Font("Calibri",30));
+		homescreen.translateXProperty().bind(SceneController.getStage().widthProperty().subtract(196.36+90)); //problem: relation rauszufinden
+		//lösung: messen mit geodreieck und ausrechnen
+		homescreen.translateYProperty().bind(SceneController.getStage().heightProperty().divide(2).subtract(50));
+		
+		button.setOnAction(action -> {
+			System.out.println("Hier muss eine reset operation eingefügt werden");
+		});	
+		homescreen.setOnAction(action -> {
+			SceneController.switchScene("START_MENU");
+		});
+			
+		
+		
+		root.getChildren().addAll(button, label,homescreen);
+		root.setVisible(false);
+		
+		return root;
+	}
+	
+    private Group createGameClocks() {
+    	Group createGameClocks = new Group();
+    	
+    	Label redClock = new Label("00 : 00");
+    		redClock.setTextFill(Color.RED);
+    		redClock.translateXProperty().bind(SceneController.getStage().widthProperty().subtract(180));
+    	    redClock.setTranslateY(25);
+    	    redClock.setFont(new Font("Calibri",20));
+    		
+    	
+    	Label yellowClock = new Label("00 : 00");
+    	yellowClock.setTextFill(Color.YELLOW);
+    		yellowClock.setTranslateX(115);
+    		yellowClock.setTranslateY(25);
+    		yellowClock.setFont(new Font("Calibri",20));
+  
+    	createGameClocks.getChildren().addAll(redClock, yellowClock);  	 	
+    	createGameClocks.setVisible(true);
+    	return createGameClocks;
+    }
+    
+    public void markWinningRows(Move move, int move_z) {
+		try {
+			Thread.currentThread().sleep(100); // leichte Verzögerung
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+    	
+		int move_x = move.getX(), move_y = move.getY();
+    	
+    	boolean redTurn = grid[move_x][move_y][move_z].getRed();
+    	
+    	List<Token> winningRows = new ArrayList<>(4);
     			
     	//grid[move.getX()][move.getY()][move_z].getRed();
     	
-		for(int x = -1; x <= 1; x++) {
-			for(int y = -1; y <= 1; y++) {
-				for(int z = -1; z <= 1; z++) {
-					if(x == 0 && y == 0 && z == 0) break; // at least one index needs to change
+		for(int deltaX = -1; deltaX <= 1; deltaX++) {
+			for(int deltaY = -1; deltaY <= 1; deltaY++) {
+				for(int deltaZ = -1; deltaZ <= 1; deltaZ++) {
+					if(deltaX == 0 && deltaY == 0 && deltaZ == 0) break; // at least one index needs to change
 					
 					int leftBoarder = winningLength - 1;
 					int rightBoarder = winningLength - 1;
 					
-					int move_x = move.getX(), move_y = move.getY();
-					
-					if(x != 0) {
-						if(x == 1) {
+					if(deltaX != 0) {
+						if(deltaX == 1) {
 							leftBoarder = Math.min(leftBoarder, move_x);
 							rightBoarder = Math.min(rightBoarder, this.x - move_x - 1);
 						} else {
@@ -390,8 +469,8 @@ public class GameEnvironment {
 						}
 					}
 					
-					if(y != 0) {
-						if(y == 1) {
+					if(deltaY != 0) {
+						if(deltaY == 1) {
 							leftBoarder = Math.min(leftBoarder, move_y);
 							rightBoarder = Math.min(rightBoarder, this.y - move_y - 1);
 						} else {
@@ -400,8 +479,8 @@ public class GameEnvironment {
 						}
 					}
 					
-					if(z != 0) {
-						if(z == 1) {
+					if(deltaZ != 0) {
+						if(deltaZ == 1) {
 							leftBoarder = Math.min(leftBoarder, move_z);
 							rightBoarder = Math.min(rightBoarder, this.z - move_z - 1);
 						} else {
@@ -414,44 +493,57 @@ public class GameEnvironment {
 					
 					if(rowLength < winningLength) continue; // row not long enough
 					
-					int _x = move_x - x * leftBoarder;
-					int _y = move_y - y * leftBoarder;
-					int _z = move_z - z * leftBoarder;
+					int _x = move_x - deltaX * leftBoarder; // Koordinaten des ersten Tokens einer Reihe
+					int _y = move_y - deltaY * leftBoarder;
+					int _z = move_z - deltaZ * leftBoarder;
 					
 					int counter = 0;
 					
-					for(int i = 0; i < rowLength; _x += x, _y += y, _z += z, i++) {
-						if(grid[_x][_y][_z] != null && (true || grid[_x][_y][_z].getRed() == redTurn)) {
-							grid[_x][_y][_z].makeTransparent();
+					for(int i = 0; i < rowLength; _x += deltaX, _y += deltaY, _z += deltaZ, i++) {
+						if(grid[_x][_y][_z] != null && grid[_x][_y][_z].getRed() == redTurn) {
 							counter++;
 						} else {
 							if(counter >= winningLength) {
-								System.out.println(counter);
-								int __x = _x, __y = _y, __z = _z;
-								for(; counter-- > 0; __x -= x, __y -= y, __z -= z) {
+								int __x = _x - deltaX, __y = _y - deltaY, __z = _z - deltaZ;
+								for(; counter-- > 0; __x -= deltaX, __y -= deltaY, __z -= deltaZ) {
 									if(grid[__x][__y][__z] != null) {
-										grid[__x][__y][__z].makeTransparent();
+										winningRows.add(grid[__x][__y][__z]);
 									}
 								}
-								counter = 0;
 							}
+							
+							counter = 0;
 						}
 					}
 					
-					/*
 					if(counter >= winningLength) {
 						System.out.println(counter);
-						int __x = _x, __y = _y, __z = _z;
-						for(; counter-- > 0; __x -= x, __y -= y, __z -= z) {
+						int __x = _x - deltaX, __y = _y - deltaY, __z = _z - deltaZ;
+						for(; counter-- > 0; __x -= deltaX, __y -= deltaY, __z -= deltaZ) {
 							if(grid[__x][__y][__z] != null) {
-								grid[__x][__y][__z].makeTransparent();
+								winningRows.add(grid[__x][__y][__z]);
 							}
 						}
 					}
-					*/
 				}
 			}
 		}
+		
+		List<Token> allTokens = new ArrayList<>();
+		
+		for(int i = 0; i < x; i++) {
+			for(int j = 0; j < y; j++) {
+				for(int k = 0; k < z; k++) {
+					if(grid[i][j][k] != null) {
+						allTokens.add(grid[i][j][k]);
+					}
+				}
+			}
+		}
+		
+		// mache alle Tokens bis auf die, der Gewinnreihe, transparent
+		winningRows.forEach(winningToken -> allTokens.remove(winningToken));
+		allTokens.forEach(Token::makeTransparent);
     }
 	
     public Scene getScene() {
@@ -463,14 +555,14 @@ public class GameEnvironment {
 	}
 
 	class SmartGroup extends Group {
-        Rotate r;
-        Transform t = new Rotate();
+        Rotate rotation;
+        Transform transformation = new Rotate();
 
         void rotate(int angle, Point3D axis) {
-            r = new Rotate(angle, axis);
-            t = t.createConcatenation(r);
+        	rotation = new Rotate(angle, axis);
+        	transformation = transformation.createConcatenation(rotation);
             this.getTransforms().clear();
-            this.getTransforms().add(t);
+            this.getTransforms().add(transformation);
         }
     }
 }

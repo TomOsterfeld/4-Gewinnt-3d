@@ -50,7 +50,6 @@ public class Token extends Sphere {
     }
 
 	public boolean getRed() {
-		// TODO Auto-generated method stub
-		return false;
+		return red;
 	}
 }
