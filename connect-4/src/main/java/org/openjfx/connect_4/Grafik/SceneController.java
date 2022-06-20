@@ -52,8 +52,8 @@ public class SceneController {
         switchScene(sceneName, new Scene(new Group()), RESIZEBLE_MAP.get(sceneName));
     }
 
-    public static void switchScene(String sceneName, Scene scene, boolean resizable) {
-        if (!SCENE_HASH_MAP.containsKey(sceneName)) {
+    public static void switchScene(String sceneName, Scene scene, boolean resizable, boolean newScene) {
+        if (!SCENE_HASH_MAP.containsKey(sceneName) || newScene) {
             SCENE_HASH_MAP.put(sceneName, scene);
             RESIZEBLE_MAP.put(sceneName, resizable);
         }

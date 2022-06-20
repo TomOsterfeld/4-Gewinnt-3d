@@ -16,7 +16,7 @@ public class BotPlayer extends Player {
 	private Move bestMove;
 	List<Move> valideMoves;
 	
-	private long timeOut = 10000;
+	private long timeOut = 2000;
 
 	@Override
 	public Move getMove() {

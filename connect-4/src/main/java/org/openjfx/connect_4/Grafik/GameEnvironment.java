@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.openjfx.connect_4.Logik.GameClock;
 import org.openjfx.connect_4.Logik.Move;
 
 import javafx.geometry.Point3D;
@@ -36,6 +37,7 @@ import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -58,6 +60,9 @@ public class GameEnvironment {
 	private Camera camera_3D;
 	private SubScene scene_3D;
 	private SmartGroup content;
+	
+	private Label redClock, yellowClock;
+	private GameClock redTimer, yellowTimer;
 	
     private Color color;
     private Color transparentColor;
@@ -113,9 +118,8 @@ public class GameEnvironment {
 		grid = new Token[x][y][z];
 		
 		createKeyBindings();		 
-		
-		//createBoxes();
 	}
+	
 	
 	private void createKeyBindings() {
 		Camera camera = scene_3D.getCamera();
@@ -178,19 +182,24 @@ public class GameEnvironment {
         token.setPickOnBounds(false);
         token.mouseTransparentProperty().set(true);
         
+        if(redturn) {
+        	redTimer.stop();
+        	yellowTimer.start();
+        } else {
+        	yellowTimer.stop();
+        	redTimer.start();
+        }
+        
         redturn = !redturn;
     }
     
 	private void gewinnAnimation(boolean redWin) {
-	
 		
 	if(redWin == true) {
 		
 	}else {
 		
 	}	
-		
-	
 		
 	}
     
@@ -423,20 +432,54 @@ public class GameEnvironment {
 	 * @return
 	 */
     private Group createGameClocks() {
+    	int minutes = 10;
+    	
     	Group createGameClocks = new Group();
     	
-    	Label redClock = new Label("00 : 00");
-    		redClock.setTextFill(Color.RED);
-    		redClock.translateXProperty().bind(SceneController.getStage().widthProperty().subtract(180));
-    	    redClock.setTranslateY(25);
-    	    redClock.setFont(new Font("Calibri",20));
+    	redTimer = new GameClock(minutes * 60);
+		yellowTimer = new GameClock(minutes * 60);
+    	
+    	redClock = new Label(redTimer.toString());
+		redClock.setTextFill(Color.RED);
+		redClock.translateXProperty().bind(SceneController.getStage().widthProperty().subtract(180));
+	    redClock.setTranslateY(25);
+	    redClock.setFont(new Font("Calibri",20));
     		
     	
-    	Label yellowClock = new Label("00 : 00");
+    	yellowClock = new Label(yellowTimer.toString());
     	yellowClock.setTextFill(Color.YELLOW);
-    		yellowClock.setTranslateX(115);
-    		yellowClock.setTranslateY(25);
-    		yellowClock.setFont(new Font("Calibri",20));
+		yellowClock.setTranslateX(115);
+		yellowClock.setTranslateY(25);
+		yellowClock.setFont(new Font("Calibri",20));
+		
+		// Tom
+		redTimer.setAction(() -> {
+    		Platform.runLater(() -> {
+    			redClock.setText(redTimer.toString());
+    		});
+    	});
+		
+		yellowTimer.setAction(() -> {
+    		Platform.runLater(() -> {
+    			yellowClock.setText(yellowTimer.toString());
+    		});
+    	});
+		
+		redTimer.setOnZero(() -> {
+			System.out.println("Zeit abgelaufen");
+    		Platform.runLater(() -> {
+    			redClock.setText(redTimer.toString());
+    		});
+    	});
+		
+		yellowTimer.setOnZero(() -> {
+			System.out.println("Zeit abgelaufen");
+    		Platform.runLater(() -> {
+    			yellowClock.setText(yellowTimer.toString());
+    		});
+    	});
+    		
+    	// nicht mehr Tom
   
     	createGameClocks.getChildren().addAll(redClock, yellowClock);  	 	
     	createGameClocks.setVisible(true);
