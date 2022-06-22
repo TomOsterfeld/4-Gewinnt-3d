@@ -76,12 +76,14 @@ public class GameEnvironment {
 	private boolean redturn;
 	
 	private Consumer<Move> placeTokenHandler;
+	private Consumer<Boolean> winEvent;
 	
-	public GameEnvironment(int x, int y, int z, int winningLength, Consumer<Move> placeTokenHandler) {
+	public GameEnvironment(int x, int y, int z, int winningLength, Consumer<Move> placeTokenHandler, Consumer<Boolean> winEvent) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.winningLength = winningLength;
+		this.winEvent = winEvent;
 		this.placeTokenHandler = placeTokenHandler;
 		init();
 	}
@@ -422,7 +424,7 @@ public class GameEnvironment {
 		
 		
 		root.getChildren().addAll(button, label,homescreen);
-		root.setVisible(false);
+		root.setVisible(true);
 		
 		return root;
 	}
@@ -432,7 +434,7 @@ public class GameEnvironment {
 	 * @return
 	 */
     private Group createGameClocks() {
-    	int minutes = 10;
+    	int minutes = 1;
     	
     	Group createGameClocks = new Group();
     	
@@ -468,14 +470,14 @@ public class GameEnvironment {
 		redTimer.setOnZero(() -> {
 			System.out.println("Zeit abgelaufen");
     		Platform.runLater(() -> {
-    			redClock.setText(redTimer.toString());
+    			winEvent.accept(false);
     		});
     	});
 		
 		yellowTimer.setOnZero(() -> {
 			System.out.println("Zeit abgelaufen");
     		Platform.runLater(() -> {
-    			yellowClock.setText(yellowTimer.toString());
+    			winEvent.accept(true);
     		});
     	});
     		

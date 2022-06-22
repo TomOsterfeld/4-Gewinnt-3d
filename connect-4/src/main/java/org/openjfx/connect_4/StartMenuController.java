@@ -70,7 +70,7 @@ public class StartMenuController {
     
     @FXML
     private void onSettingsButtonClicked() {
-    	SceneController.switchScene("SETTINGS_MENU", "settingsmenu", false, true);
+    	SceneController.switchScene("SETTINGS_MENU", "settingsmenu", false);
     }
     
     @FXML

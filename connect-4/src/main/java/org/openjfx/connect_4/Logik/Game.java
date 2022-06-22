@@ -369,10 +369,17 @@ public class Game {
     		}
     	};
     	
-    	GameEnvironment gameEnvironment = new GameEnvironment(this.x, this.y, this.z, this.winningLength, placeTokenHandler);
+    	Thread thread;
+    	
+    	Consumer<Boolean> winEvent = redwin -> {
+    		System.out.println((redwin ? "Rot " : "Gelb") + " hat gewonnen.");
+    		game.setCurrentStage(redwin ? GameStage.RED_WIN : GameStage.YELLOW_WIN); // set GameStage to winner
+    	};
+    	
+    	GameEnvironment gameEnvironment = new GameEnvironment(this.x, this.y, this.z, this.winningLength, placeTokenHandler, winEvent);
         SceneController.switchScene("GAME_ENVIRONMENT", gameEnvironment.getScene()); //TODO: there might be several gameEnvironments
     	
-        Thread thread = new Thread() {
+        thread = new Thread() {
         	public void run() {
         		System.out.println(game);
         		
@@ -416,6 +423,10 @@ public class Game {
         thread.start();
 	}
 	
+	private void setCurrentStage(GameStage stage) {
+		currentStage = stage;
+	}
+
 	/**
 	 * 
 	 */

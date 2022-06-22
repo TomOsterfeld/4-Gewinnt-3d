@@ -45,11 +45,11 @@ public class SceneController {
      * @param scene:     the scene to be switched to
      */
     public static void switchScene(String sceneName, Scene scene) {
-        switchScene(sceneName, scene, true);
+        switchScene(sceneName, scene, true, true);
     }
 
     public static void switchScene(String sceneName) {
-        switchScene(sceneName, new Scene(new Group()), RESIZEBLE_MAP.get(sceneName));
+        switchScene(sceneName, new Scene(new Group()), RESIZEBLE_MAP.get(sceneName), false);
     }
 
     public static void switchScene(String sceneName, Scene scene, boolean resizable, boolean newScene) {
