@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.openjfx.connect_4.Logik.Game;
 import org.openjfx.connect_4.Logik.GameClock;
+import org.openjfx.connect_4.Logik.LocalPlayer;
 import org.openjfx.connect_4.Logik.Move;
+import org.openjfx.connect_4.Logik.Player;
 
 import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
@@ -77,6 +80,7 @@ public class GameEnvironment {
 	
     private ReadOnlyDoubleProperty widthProperty, heightProperty;
 	private boolean redturn;
+	private boolean pausiert = false;
 	
 	private Consumer<Move> placeTokenHandler;
 	private Consumer<Boolean> winEvent;
@@ -324,7 +328,8 @@ public class GameEnvironment {
                 };
 
                 EventHandler<Event> onMouseClicked = event -> {
-                    placeTokenHandler.accept(new Move(COLUMN_X - 1, COLUMN_Z - 1));
+                	if(!pausiert)
+                		placeTokenHandler.accept(new Move(COLUMN_X - 1, COLUMN_Z - 1));
                 };
 
                 rect.setOnMouseEntered(onMouseEntered);
@@ -546,15 +551,28 @@ public class GameEnvironment {
 		allTokens.forEach(Token::makeTransparent);
     }
     
+    public void restart() {
+    	SceneController.switchScene("SETTINGS_MENU", "settingsmenu", false);
+    }
+    
+    /**
+     * 
+     */
     public void gewinnAnimation(String ergebnis) {
     	Label gewinner = (Label) restartGroup.getChildren().get(1);
     	gewinner.setText(ergebnis);
     	restartGroup.setVisible(!restartGroup.isVisible());	
     	//pauseGroup.setVisible(!pauseGroup.isVisible());	
     	if(restartGroup.isVisible()) {
+    		pausiert = true;
     		scene_3D.setOpacity(0.5);
+    		redTimer.stop();
+    		yellowTimer.stop();
     	} else {
+    		pausiert = false;
     		scene_3D.setOpacity(1.0);
+    		redTimer.stop();
+    		yellowTimer.stop();
     	}
     }
 
@@ -562,8 +580,10 @@ public class GameEnvironment {
     	restartGroup.setVisible(false);
     	pauseGroup.setVisible(!pauseGroup.isVisible());
     	if(pauseGroup.isVisible()) {
+    		pausiert = true;
     		scene_3D.setOpacity(0.2);
     	}else {
+    		pausiert = false;
     		scene_3D.setOpacity(1.0);
     	}
     }
@@ -602,6 +622,7 @@ public class GameEnvironment {
 		
 		button.setOnAction(action -> {
 			System.out.println("Hier muss eine reset operation eingefügt werden");
+			restart();
 		});	
 		homescreen.setOnAction(action -> {
 			SceneController.switchScene("START_MENU");
@@ -619,7 +640,7 @@ public class GameEnvironment {
 		pauseGroup = new Group();
 		
 		Button pause = new Button();
-		String pauseString = "Pause";
+		String pauseString = "Restart";
 		pause.setText(pauseString);
 		pause.setFont(new Font("Calibri", 30));
 		pause.setTranslateX(90);
@@ -637,7 +658,13 @@ public class GameEnvironment {
 		});
 		
 		pause.setOnAction(action -> {
-			System.out.println("Aktion muss noch eingefügt werden");
+			Player player1 = new LocalPlayer();
+			Player player2 = new LocalPlayer();
+	    	Game game = new Game(5, 5, 4, 4, player1, player2);
+	    	player1.setGame(game);
+	    	player2.setGame(game);
+	    	
+	    	game.startGame();
 		});
 			
 	
