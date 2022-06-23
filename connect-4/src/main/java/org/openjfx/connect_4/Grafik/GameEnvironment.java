@@ -61,6 +61,9 @@ public class GameEnvironment {
 	private SubScene scene_3D;
 	private SmartGroup content;
 	
+	private Group restartGroup;
+	private Group pauseGroup;
+	
 	private Label redClock, yellowClock;
 	private GameClock redTimer, yellowTimer;
 	
@@ -78,12 +81,11 @@ public class GameEnvironment {
 	private Consumer<Move> placeTokenHandler;
 	private Consumer<Boolean> winEvent;
 	
-	public GameEnvironment(int x, int y, int z, int winningLength, Consumer<Move> placeTokenHandler, Consumer<Boolean> winEvent) {
+	public GameEnvironment(int x, int y, int z, int winningLength, Consumer<Move> placeTokenHandler) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.winningLength = winningLength;
-		this.winEvent = winEvent;
 		this.placeTokenHandler = placeTokenHandler;
 		init();
 	}
@@ -103,6 +105,7 @@ public class GameEnvironment {
 		globalRoot.getChildren().add(createTokenSymbolYellow());
 		globalRoot.getChildren().add(createTokenSymbolRed());
 		globalRoot.getChildren().add(createGewinnScreen());
+		globalRoot.getChildren().add(createPause());
 		globalRoot.getChildren().add(createGameClocks());
 		 
 		scene = new Scene(globalRoot);
@@ -153,7 +156,7 @@ public class GameEnvironment {
                     camera_3D.setRotate(camera_3D.getRotate() - 1);
                     break;
                 case ESCAPE:
-                    //restartMenu();
+                    pauseanimation();
                     break;
             }
         });
@@ -194,16 +197,6 @@ public class GameEnvironment {
         
         redturn = !redturn;
     }
-    
-	private void gewinnAnimation(boolean redWin) {
-		
-	if(redWin == true) {
-		
-	}else {
-		
-	}	
-		
-	}
     
     public void markTokens(List<int[]> tokens) {
     	tokens.forEach(point3d -> {
@@ -382,52 +375,7 @@ public class GameEnvironment {
     	light3.translateZProperty().set(-TILE_SIZE * y);
     	return List.of(light, light1, light2, light3);
     }
-    
-    /**
-     * @author Kevin
-     * @return
-     */
-	private Group createGewinnScreen() {
-		Group root = new Group();
-		
-		String restart = "restart";
-		String homescreenstring = "homescreen";
-		
-		Button button = new Button();
-		button.setText(restart);
-		button.setFont(new Font("Calibri",30));
-		button.setTranslateX(90);   //hat am längsten gedauert das rasuzufinden, angeschaut wie es bei gelben token ist
-		button.translateYProperty().bind(SceneController.getStage().heightProperty().divide(2).subtract(50));
-		
-		Label label = new Label("Rot gewinnt"); //Fehler: falsches importiert, L�sung bereits gefunden
-		label.setFont(new Font("Calibri",50));
-		label.translateXProperty().bind(SceneController.getStage().widthProperty().divide(2).subtract(120));
-		label.translateYProperty().bind(SceneController.getStage().heightProperty().divide(2).subtract(50));
-		
-		//.translateXProperty()
-    	//.bind(SceneController.getStage().widthProperty().subtract(20 + 2 * redToken.getRadius()))   kopiert von tom als hilfe für mich
-		
-		Button homescreen = new Button();
-		homescreen.setText(homescreenstring);
-		homescreen.setFont(new Font("Calibri",30));
-		homescreen.translateXProperty().bind(SceneController.getStage().widthProperty().subtract(196.36+90)); //problem: relation rauszufinden
-		//lösung: messen mit geodreieck und ausrechnen
-		homescreen.translateYProperty().bind(SceneController.getStage().heightProperty().divide(2).subtract(50));
-		
-		button.setOnAction(action -> {
-			System.out.println("Hier muss eine reset operation eingefügt werden");
-		});	
-		homescreen.setOnAction(action -> {
-			SceneController.switchScene("START_MENU");
-		});
-			
-		
-		
-		root.getChildren().addAll(button, label,homescreen);
-		root.setVisible(true);
-		
-		return root;
-	}
+ 
 	
 	/**
 	 * @author: Endrit
@@ -596,6 +544,110 @@ public class GameEnvironment {
 		// mache alle Tokens bis auf die, der Gewinnreihe, transparent
 		winningRows.forEach(winningToken -> allTokens.remove(winningToken));
 		allTokens.forEach(Token::makeTransparent);
+    }
+    
+    public void gewinnAnimation(String ergebnis) {
+    	Label gewinner = (Label) restartGroup.getChildren().get(1);
+    	gewinner.setText(ergebnis);
+    	restartGroup.setVisible(!restartGroup.isVisible());	
+    	//pauseGroup.setVisible(!pauseGroup.isVisible());	
+    	if(restartGroup.isVisible()) {
+    		scene_3D.setOpacity(0.5);
+    	} else {
+    		scene_3D.setOpacity(1.0);
+    	}
+    }
+
+    private void pauseanimation() {
+    	restartGroup.setVisible(false);
+    	pauseGroup.setVisible(!pauseGroup.isVisible());
+    	if(pauseGroup.isVisible()) {
+    		scene_3D.setOpacity(0.2);
+    	}else {
+    		scene_3D.setOpacity(1.0);
+    	}
+    }
+
+    private Group createGewinnScreen() {
+		restartGroup = new Group();
+		
+		String restart = "restart";
+		String homescreenstring = "homescreen";
+		
+		Button button = new Button();
+		button.setText(restart);
+		button.setFont(new Font("Calibri",30));
+		button.setTranslateX(90);   //hat am längsten gedauert das rasuzufinden, angeschaut wie es bei gelben token ist
+		button.translateYProperty().bind(SceneController.getStage().heightProperty().divide(2).subtract(50));
+		
+		Label label = new Label("Rot gewinnt"); //Fehler: falsches importiert, L�sung bereits gefunden
+		label.setFont(new Font("Calibri",50));
+		label.translateXProperty().bind(SceneController.getStage().widthProperty().divide(2).subtract(120));
+		label.translateYProperty().bind(SceneController.getStage().heightProperty().divide(2).subtract(50));
+		
+		Label label2 = new Label("Gelb gewinnt");
+		label2.setFont(new Font ("Calibri", 50));
+		label2.translateXProperty().bind(SceneController.getStage().widthProperty().divide(2).subtract(120));
+		label.translateYProperty().bind(SceneController.getStage().heightProperty().divide(2).subtract(50));
+		
+		//.translateXProperty()
+    	//.bind(SceneController.getStage().widthProperty().subtract(20 + 2 * redToken.getRadius()))   kopiert von tom als hilfe für mich
+		
+		Button homescreen = new Button();
+		homescreen.setText(homescreenstring);
+		homescreen.setFont(new Font("Calibri",30));
+		homescreen.translateXProperty().bind(SceneController.getStage().widthProperty().subtract(196.36+90)); //problem: relation rauszufinden
+		//lösung: messen mit geodreieck und ausrechnen
+		homescreen.translateYProperty().bind(SceneController.getStage().heightProperty().divide(2).subtract(50));
+		
+		button.setOnAction(action -> {
+			System.out.println("Hier muss eine reset operation eingefügt werden");
+		});	
+		homescreen.setOnAction(action -> {
+			SceneController.switchScene("START_MENU");
+		});
+			
+		
+		
+		restartGroup.getChildren().addAll(button, label,homescreen);
+		restartGroup.setVisible(false);
+		
+		return restartGroup;
+	}
+
+    private Group createPause() {
+		pauseGroup = new Group();
+		
+		Button pause = new Button();
+		String pauseString = "Pause";
+		pause.setText(pauseString);
+		pause.setFont(new Font("Calibri", 30));
+		pause.setTranslateX(90);
+		pause.translateYProperty().bind(SceneController.getStage().heightProperty().divide(2).subtract(50));
+		
+		Button homescreen = new Button();
+		String homescreenstring = "Homescreen";
+		homescreen.setText(homescreenstring);
+		homescreen.setFont(new Font("Calibri",30));
+		homescreen.translateXProperty().bind(SceneController.getStage().widthProperty().subtract(196.36+90));
+		homescreen.translateYProperty().bind(SceneController.getStage().heightProperty().divide(2).subtract(50));
+		
+		homescreen.setOnAction(action -> {
+			SceneController.switchScene("START_MENU");
+		});
+		
+		pause.setOnAction(action -> {
+			System.out.println("Aktion muss noch eingefügt werden");
+		});
+			
+	
+		pauseGroup.getChildren().addAll(pause,homescreen);
+		pauseGroup.setVisible(false);
+		return pauseGroup;
+	}
+    
+    public void setWinEvent(Consumer<Boolean> winEvent) {
+    	this.winEvent = winEvent;
     }
 	
     public Scene getScene() {

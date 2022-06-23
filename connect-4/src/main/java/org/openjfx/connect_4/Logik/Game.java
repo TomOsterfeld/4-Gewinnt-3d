@@ -370,13 +370,18 @@ public class Game {
     	};
     	
     	Thread thread;
-    	
+    	GameEnvironment gameEnvironment = new GameEnvironment(this.x, this.y, this.z, this.winningLength, placeTokenHandler);
+
     	Consumer<Boolean> winEvent = redwin -> {
     		System.out.println((redwin ? "Rot " : "Gelb") + " hat gewonnen.");
     		game.setCurrentStage(redwin ? GameStage.RED_WIN : GameStage.YELLOW_WIN); // set GameStage to winner
+    		Platform.runLater(() -> {
+    			gameEnvironment.gewinnAnimation("Rot gewinnt");
+    		});
     	};
     	
-    	GameEnvironment gameEnvironment = new GameEnvironment(this.x, this.y, this.z, this.winningLength, placeTokenHandler, winEvent);
+    	gameEnvironment.setWinEvent(winEvent);
+    	
         SceneController.switchScene("GAME_ENVIRONMENT", gameEnvironment.getScene()); //TODO: there might be several gameEnvironments
     	
         thread = new Thread() {
@@ -412,10 +417,18 @@ public class Game {
 		    	}
 		    	if(getCurrentGameStage().equals(GameStage.RED_WIN)) {
 		    		System.out.println(getPlayerRed() + " (red) wins");
-		    		gameEnvironment.markWinningRows(move, heights[move.getX()][move.getY()] - 1);
+		    		final Move _move = move;
+		    		Platform.runLater(() -> {
+			    		gameEnvironment.markWinningRows(_move, heights[_move.getX()][_move.getY()] - 1);
+		    			gameEnvironment.gewinnAnimation("Rot gewinnt");
+		    		});
 		    	} else if(getCurrentGameStage().equals(GameStage.YELLOW_WIN)) {
 		    		System.out.println(getPlayerYellow() + " (yellow) wins");
-		    		gameEnvironment.markWinningRows(move, heights[move.getX()][move.getY()] - 1);
+		    		final Move _move = move;
+		    		Platform.runLater(() -> {
+			    		gameEnvironment.markWinningRows(_move, heights[_move.getX()][_move.getY()] - 1);
+		    			gameEnvironment.gewinnAnimation("Gelb gewinnt");
+		    		});
 		    	}
         	}
         };
