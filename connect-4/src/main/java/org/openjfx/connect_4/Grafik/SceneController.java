@@ -10,6 +10,11 @@ import java.util.HashMap;
 
 import org.openjfx.connect_4.Main;
 
+/**
+ * 
+ * @author Tom
+ *
+ */
 public class SceneController {
     private static Stage stage;
     private static HashMap<String, Scene> SCENE_HASH_MAP = new HashMap<>(5);

@@ -1,5 +1,7 @@
 package org.openjfx.connect_4;
 
+import java.util.prefs.Preferences;
+
 import org.openjfx.connect_4.Grafik.GameEnvironment;
 import org.openjfx.connect_4.Grafik.SceneController;
 import org.openjfx.connect_4.Logik.ConsolePlayer;
@@ -13,13 +15,22 @@ import javafx.scene.control.SplitMenuButton;
 
 import javafx.fxml.FXML;
 
+/**
+ * 
+ * @author Tom
+ *
+ */
 public class StartMenuController {
 	@FXML 
 	private SplitMenuButton playerButton1, playerButton2;
+	public static final Preferences PREFS = Preferences.userNodeForPackage(Main.class);
 	
+	/**
+	 * wird aufgerufen wenn die Scene geladen wird
+	 */
 	public void initialize() {
-		playerButton1.setText("Local Game");
-		playerButton2.setText("Local Game");
+		playerButton1.setText(PREFS.get("PLAYER_1", "Local Game"));
+		playerButton2.setText(PREFS.get("PLAYER_2", "Local Game"));
 		
 		playerButton1.getItems().forEach(item -> {
 			item.setOnAction(action -> {
@@ -37,9 +48,18 @@ public class StartMenuController {
     @FXML
     private void onStartButtonClicked() {
     	Player player1, player2;
+
     	
     	String value1 = playerButton1.getText();
     	String value2 = playerButton2.getText();
+    	
+    	int x = PREFS.getInt("BOARD_X", 5);
+    	int y = PREFS.getInt("BOARD_Y", 5);
+    	int z = PREFS.getInt("BOARD_Z", 4);
+    	int winningLength = PREFS.getInt("WINNING_LENGTH", 4);
+    	
+    	PREFS.put("PLAYER_1", value1);
+    	PREFS.put("PLAYER_2", value2);
     	
     	switch(value1) {
     		case "Random Player": 
@@ -63,7 +83,7 @@ public class StartMenuController {
 				player2 = new LocalPlayer();
     	}
     	
-    	Game game = new Game(5, 5, 4, 4, player1, player2);
+    	Game game = new Game(x, y, z, winningLength, player1, player2);
     	
     	game.startGame();
     }

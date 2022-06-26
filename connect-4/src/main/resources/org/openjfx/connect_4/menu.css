@@ -1,0 +1,106 @@
+.root {
+    -fx-background-color: black;
+}
+
+.anchor-pane {
+    -fx-background-color: -fx-control-inner-background, linear-gradient(to right, #2e2e2e, #353535, #3c3c3c, #434343, #4a4a4a);
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.text-field {
+    -fx-text-fill: derive(lightgrey, 0%);
+    -fx-background-color: derive(darkgrey, -40%);
+}
+
+.v-box {
+    -fx-background-color: linear-gradient(to right, #2e2e2e, #353535, #3c3c3c, #434343, #4a4a4a);
+}
+
+.button {
+    -fx-text-fill: white;
+    -fx-background-color: #282828; /*radial-gradient(radius 360%, white, derive(white, -10%), derive(white, 10%));*/
+    /*-fx-background-insets: 0, 1 1 1 1;*/
+    -fx-font-weight: bold;
+
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+
+    -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.1) , 2, 0.0 , 0 , 1);
+}
+
+.button:hover {
+    -fx-font-size: 13;
+    -fx-background-color: derive(darkgrey, 10%), radial-gradient(radius 360%, derive(darkgrey, 5%), derive(lightgrey, -10%), derive(lightgrey, 10%));
+    -fx-text-fill: derive(darkgrey, -40%);
+}
+
+.button:pressed {
+    -fx-background-color: darkgrey, radial-gradient(radius 360%, lightgrey, derive(white, -10%), derive(white, 10%));
+    -fx-text-fill: derive(darkgrey, -30%);
+}
+
+/*when button is activated*/
+.button:focused {
+    -fx-font-size: 13;
+}
+
+.label {
+    -fx-text-fill: derive(white, 0%);
+}
+
+.split-menu-button {
+	-fx-text-fill: white;
+    -fx-background-color: #282828; /*radial-gradient(radius 360%, white, derive(white, -10%), derive(white, 10%));*/
+    /*-fx-background-insets: 0, 1 1 1 1;*/
+    -fx-font-weight: bold;
+
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+
+    -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.1) , 2, 0.0 , 0 , 1);
+}
+
+.menu-button {
+    -fx-background-color: #282828;
+}
+
+.split-menu-button .label {
+    -fx-background-color: transparent;
+}
+
+.split-menu-button .arrow {
+    -fx-background-color: white;
+}
+
+.split-menu-button .menu-button {
+    -fx-background-color: #282828;
+}
+
+.split-menu-button .menu-button .label {
+    -fx-background-color: transparent;
+}
+
+.split-menu-button .menu {
+    -fx-background-color: black;
+}
+
+.split-menu-button .menu-item {
+    -fx-background-color: #101010;
+}
+
+.split-menu-button .menu-item:hover {
+    -fx-background-color: cyan;
+}
+
+.split-menu-button .button {
+    -fx-background-color: #282828;
+}
+
+.split-menu-button .menu-bar {
+    -fx-background-color: black;
+}
+
+.split-menu-button .arrow-button {
+    -fx-background-color: grey ;
+}

@@ -9,15 +9,19 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/18"
- 			xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.connect_4.StartMenuController" stylesheets="@startMenu.css">
+ 			xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.connect_4.StartMenuController" stylesheets="@menu.css">
    <children>
-      <HBox alignment="CENTER_LEFT" layoutX="88.0" layoutY="115.0" prefHeight="400.0" prefWidth="1005.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <HBox alignment="CENTER" layoutX="88.0" layoutY="115.0" prefHeight="400.0" prefWidth="1005.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <VBox alignment="CENTER" prefHeight="600.0" prefWidth="403.0" spacing="20.0">
                <children>
-                  <Label prefHeight="35.0" prefWidth="135.0" text="Label" />
+                  <Label text="4 Gewinnt 3D">
+                     <font>
+                        <Font size="26.0" />
+                     </font></Label>
                   <Button fx:id="startButton" mnemonicParsing="false" onAction="#onStartButtonClicked" prefHeight="30.0" prefWidth="114.0" text="Start" />
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="176.0" spacing="10.0">
                      <children>
@@ -45,7 +49,6 @@
                   <Button fx:id="settingsButton" mnemonicParsing="false" prefHeight="35.0" prefWidth="110.0" text="Settings" onAction="#onSettingsButtonClicked" />
                   <Button mnemonicParsing="false" prefHeight="32.0" prefWidth="110.0" text="Exit" onAction="#onExitButtonClicked" />
                </children></VBox>
-            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
          </children>
       </HBox>
    </children>

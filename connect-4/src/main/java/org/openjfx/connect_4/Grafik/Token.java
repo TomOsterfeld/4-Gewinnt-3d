@@ -23,13 +23,18 @@ public class Token extends Sphere {
         //material.setDiffuseMap(new Image(getClass().getResourceAsStream("/img/texture.png")));
         //material.setDiffuseColor(red ? Color.RED : Color.YELLOW);
 
-        PhongMaterial mat = new PhongMaterial(red ? Color.RED : Color.YELLOW);
-        setMaterial(mat);
+        PhongMaterial material = new PhongMaterial(red ? Color.RED : Color.YELLOW);
+        setMaterial(material);
         translateYProperty().set(-100);
         setViewOrder(1);
 
         this.setEffect(GameEnvironment.getLighting());
         this.setMouseTransparent(true); // Andernfalls wird teilweise ein Klicken auf die seitlichen Buttons gestört
+    }
+    
+    public void darker() {
+        PhongMaterial material = new PhongMaterial(red ? Color.RED.darker() : Color.YELLOW.darker());
+        setMaterial(material);
     }
 
     public void makeTransparent() {

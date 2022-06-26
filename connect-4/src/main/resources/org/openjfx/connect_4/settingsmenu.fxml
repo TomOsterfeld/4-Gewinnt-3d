@@ -2,21 +2,63 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.connect_4.SettingsMenuController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.connect_4.SettingsMenuController" stylesheets="@menu.css">
    <children>
-      <HBox layoutX="432.0" layoutY="200.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <HBox alignment="CENTER" layoutX="97.0" layoutY="200.0" prefHeight="600.0" prefWidth="790" spacing="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="97.0" AnchorPane.rightAnchor="71.0" AnchorPane.topAnchor="0.0">
          <children>
-            <VBox prefHeight="600.0" prefWidth="311.0">
+            <Button minHeight="40.0" minWidth="120.0" mnemonicParsing="false" onMouseClicked="#onClassicButtonClicked" prefHeight="25.0" prefWidth="44.0" text="Classic 5 x 5 x 4" />
+            <VBox alignment="CENTER" prefHeight="600.0" prefWidth="950.0" spacing="30.0">
                <children>
-                  <Label text="Label" />
-                  <Button fx:id="StartMenuButton" mnemonicParsing="false" onAction="#onStartMenuButtonClicked" text="Startmenu" />
+                  <Label text="Settings">
+                     <font>
+                        <Font size="26.0" />
+                     </font></Label>
+                  <HBox alignment="CENTER" prefHeight="34.0" prefWidth="432.0" spacing="30.0">
+                     <children>
+                        <Label prefHeight="31.0" prefWidth="110.0" text="Spielzeit" />
+                        <TextField fx:id="timeTextField" prefHeight="31.0" prefWidth="133.0" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="31.0" prefWidth="432.0" spacing="30.0">
+                     <children>
+                        <Label prefHeight="31.0" prefWidth="110.0" text="Botzeit" />
+                        <TextField fx:id="botTimeTextField" prefHeight="31.0" prefWidth="133.0" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="35.0" prefWidth="432.0" spacing="30.0">
+                     <children>
+                        <Label prefHeight="31.0" prefWidth="110.0" text="Breite (x)" />
+                        <TextField prefHeight="31.0" prefWidth="133.0" fx:id="xTextField" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="31.0" prefWidth="432.0" spacing="30.0">
+                     <children>
+                        <Label prefHeight="31.0" prefWidth="110.0" text="Breite (y)" />
+                        <TextField fx:id="yTextField" prefHeight="31.0" prefWidth="133.0" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="34.0" prefWidth="432.0" spacing="30.0">
+                     <children>
+                        <Label prefHeight="31.0" prefWidth="110.0" text="Höhe" />
+                        <TextField fx:id="zTextField" prefHeight="31.0" prefWidth="133.0" />
+                     </children>
+                  </HBox>
+				  <HBox alignment="CENTER" prefHeight="34.0" prefWidth="432.0" spacing="30.0">
+                     <children>
+                        <Label prefHeight="31.0" prefWidth="110.0" text="Gewinn-Länge" />
+                        <TextField fx:id="winningLengthTextField" prefHeight="31.0" prefWidth="133.0" />
+                     </children>
+                  </HBox>
+                  <Button fx:id="StartMenuButton" minHeight="40.0" minWidth="100.0" mnemonicParsing="false" onAction="#onStartMenuButtonClicked" text="Startmenu" />
                </children>
             </VBox>
+            <Button minHeight="40.0" minWidth="120.0" mnemonicParsing="false" onMouseClicked="#onSmallButtonClicked" text="Small 4 x 4 x 4" />
          </children>
       </HBox>
    </children>

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import org.openjfx.connect_4.Grafik.GameEnvironment;
+import org.openjfx.connect_4.Grafik.Music;
 import org.openjfx.connect_4.Grafik.SceneController;
 import org.openjfx.connect_4.Logik.ConsolePlayer;
 import org.openjfx.connect_4.Logik.Game;
@@ -51,22 +52,13 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
+    	Music.sound("/sounds/KahootMusic .mp3", true, 1);
     	//startConsoleGame();
     	launch();
     }
     
     public static void startConsoleGame() {
     	Game game = new Game(5, 5, 5, 4, new ConsolePlayer(), new ConsolePlayer());
-    	
-    	Thread thread = new Thread() {
-    		public void run() {
-    			for(int i = 0; i < 1000; i++) {
-    				//System.out.println("0 0");
-    			}
-    		}
-    	}; 
-    	
-    	thread.start();
     	
     	while(game.getCurrentGameStage().equals(GameStage.GAME_NOT_ENDED)) {
         	System.out.println(game);

@@ -2,6 +2,7 @@ package org.openjfx.connect_4.Logik;
 
 import java.util.List;
 
+import org.openjfx.connect_4.StartMenuController;
 import org.openjfx.connect_4.Logik.Game.GameStage;
 
 /**
@@ -16,7 +17,7 @@ public class BotPlayer extends Player {
 	private Move bestMove;
 	List<Move> valideMoves;
 	
-	private long timeOut = 2000;
+	private long timeOut = (long) (StartMenuController.PREFS.getInt("BOT_TIME", 2) * 1000);
 
 	@Override
 	public Move getMove() {
@@ -27,6 +28,8 @@ public class BotPlayer extends Player {
 		
 		Move bestMove = valideMoves.get(0);
 		
+		int movesLeft = game.movesLeft();
+		
 		while(!timeOut()) {
 			if(this.bestMove != null) { // der vorherige beste Move wird lokal gespeichert und an den Beginn der Liste gesetzt
 				bestMove = this.bestMove;
@@ -34,7 +37,7 @@ public class BotPlayer extends Player {
 				game.getValideMoves().add(0, bestMove);
 			}
 			
-			if(safeWin) break;
+			if(safeWin || currentDepth > movesLeft) break;
 			
 			int rating;
 			

@@ -23,6 +23,7 @@ public class Game {
 	private final int[][] heights; // store the height at each location
 	
 	private final int winningLength;
+	private final int MAX_MOVES;
 	
 	private Player playerRed;
 	private Player playerYellow;
@@ -31,8 +32,10 @@ public class Game {
 	private boolean redTurn;
 	
 	private GameStage currentStage;
+	private boolean ended = false;
 	
 	private int rating;
+	private int moves;
 	
 	private CopyOnWriteArrayList <Move> valideMoves;
 	
@@ -60,6 +63,8 @@ public class Game {
 		this.z = z;
 		this.winningLength = winningLength;
 		
+		this.MAX_MOVES = x * y * z;
+		
 		this.board = new Token[x][y][z];
 		this.heights = new int[x][y];
 		
@@ -77,9 +82,11 @@ public class Game {
 	 * @param playerRed: Der Spieler mit den roten Tokens
 	 * @param playerYellow : Der Spieler mit den gelben Tokens
 	 */
-	public void init(int x, int y, int z, Player playerRed, Player playerYellow) {		
+	public void init(int x, int y, int z, Player playerRed, Player playerYellow) {	
 		playerRed.setGame(this); // set the players games to this one
 		playerYellow.setGame(this);
+		
+		moves = 0;
 		
 		setRating(0);
 		
@@ -131,6 +138,8 @@ public class Game {
 			if(heights[x][y] == this.z) 
 				getValideMoves().removeIf(removedMove -> removedMove.getX() == x && removedMove.getY() == y);
 			
+			moves++;
+			
 			updateGameStage(move); // aktualisiere den Spielstatus
 			
 			redTurn = !redTurn; // der andere Spieler ist jetzt am Zug
@@ -143,6 +152,7 @@ public class Game {
 	
 	public void undoMove(Move move, int rating, int position) {
 		int x = move.getX(), y = move.getY();
+		moves--;
 		
 		if(heights[x][y] == this.z) getValideMoves().add(position, move);
 		
@@ -181,6 +191,11 @@ public class Game {
 	 * 			false:
 	 */
 	public boolean updateGameStage(Move move) {
+		boolean updated = false;
+		if(moves == MAX_MOVES) {
+			currentStage = GameStage.DRAW;
+			updated = true;
+		}
 		if(!updateRating(move)) {
 			if(rating == 10000) {
 				currentStage = GameStage.RED_WIN;
@@ -189,9 +204,9 @@ public class Game {
 				currentStage = GameStage.YELLOW_WIN;
 				//System.out.println("Yellow wins");
 			}
-			return false;
+			updated = true;
 		}
-		return true;
+		return !updated;
 	}
 	
 	public boolean updateRating(Move move) {
@@ -369,8 +384,7 @@ public class Game {
     		}
     	};
     	
-    	Thread thread;
-    	GameEnvironment gameEnvironment = new GameEnvironment(this.x, this.y, this.z, this.winningLength, placeTokenHandler);
+    	GameEnvironment gameEnvironment = new GameEnvironment(this.x, this.y, this.z, this.winningLength, placeTokenHandler, this);
 
     	Consumer<Boolean> winEvent = redwin -> {
     		System.out.println((redwin ? "Rot " : "Gelb") + " hat gewonnen.");
@@ -384,13 +398,13 @@ public class Game {
     	
         SceneController.switchScene("GAME_ENVIRONMENT", gameEnvironment.getScene()); //TODO: there might be several gameEnvironments
     	
-        thread = new Thread() {
+        Thread thread = new Thread() {
         	public void run() {
         		System.out.println(game);
         		
         		Move move = new Move(0, 0);
         		
-		    	while(getCurrentGameStage().equals(GameStage.GAME_NOT_ENDED)) {
+		    	while(currentStage.equals(GameStage.GAME_NOT_ENDED) && !ended) {
 	    			try {
 						this.sleep(50); // leichte Verz�gerung andernfalls ist es möglich, dass der vorherige Zug nicht vollständig ausgeführt wurde
 					} catch (InterruptedException e) {
@@ -415,19 +429,24 @@ public class Game {
 		    		
 		    		System.out.println(game);
 		    	}
-		    	if(getCurrentGameStage().equals(GameStage.RED_WIN)) {
-		    		System.out.println(getPlayerRed() + " (red) wins");
+		    	if(currentStage.equals(GameStage.RED_WIN)) {
+		    		System.out.println(playerRed + " (red) wins");
 		    		final Move _move = move;
 		    		Platform.runLater(() -> {
 			    		gameEnvironment.markWinningRows(_move, heights[_move.getX()][_move.getY()] - 1);
 		    			gameEnvironment.gewinnAnimation("Rot gewinnt");
 		    		});
-		    	} else if(getCurrentGameStage().equals(GameStage.YELLOW_WIN)) {
-		    		System.out.println(getPlayerYellow() + " (yellow) wins");
+		    	} else if(currentStage.equals(GameStage.YELLOW_WIN)) {
+		    		System.out.println(playerYellow + " (yellow) wins");
 		    		final Move _move = move;
 		    		Platform.runLater(() -> {
 			    		gameEnvironment.markWinningRows(_move, heights[_move.getX()][_move.getY()] - 1);
 		    			gameEnvironment.gewinnAnimation("Gelb gewinnt");
+		    		});
+		    	} else if(currentStage.equals(GameStage.DRAW)) {
+		    		System.out.println("Draw");
+		    		Platform.runLater(() -> {
+		    			gameEnvironment.gewinnAnimation("Unentschieden");
 		    		});
 		    	}
         	}
@@ -436,10 +455,6 @@ public class Game {
         thread.start();
 	}
 	
-	private void setCurrentStage(GameStage stage) {
-		currentStage = stage;
-	}
-
 	/**
 	 * 
 	 */
@@ -459,44 +474,11 @@ public class Game {
 		valideMoves.sort((move1, move2) -> (move1.getRating() < move2.getRating()) ? 1 : -1); // sortiere moves nach rating absteigend
 	}
 	
-	/*
-	public List<int[][][]> getWinningTokens(Move move) {
-		List<int[][][]> tokens = new ArrayList();
-		
-		int x = move.getX();
-		int y = move.getY();
-		int z = heights[x][y] - 1;
-		
-		List<List<Token>> rows = getRows(move, z);
-		Token winningToken = board[x][y][z];
-		
-		for(List<Token> row : rows) {
-			int counter = 0;
-			
-			for(int i = 0; i < row.size(); i++) {
-				if(row.get(i).equals(winningToken)) {
-					counter++;
-				} else {
-					if(counter >= 4) {
-						for(int j = i; j >= j - counter; j--) {						}
-							int _x = row.get(j).getX();
-							int _y = row.get(j).getY();
-							tokens.add(new int[]{row.get(i));
-						}
-					}
-					counter = 0;
-				}
-			}
-		}
-		
-		return tokens;
-	}
-	*/
-	
 	@Override
 	public String toString() {
 		String toString = (isRedTurn() ? "Rot" : "Gelb") + " ist am Zug\n";
-		toString += "Rating: " + rating + "\n";
+		toString += "Rating: " + rating + '\n';
+		toString += "Moves: " + moves + '\n';
 		
         for(int i = 0; i < z; i++) {
             for(int j = 0; j < x; j++) {
@@ -512,8 +494,20 @@ public class Game {
 		return toString;
 	}
 	
+	public void end() {
+		ended = true;
+	}
+	
+	public int movesLeft() {
+		return MAX_MOVES - moves;
+	}
+	
 	public GameStage getCurrentGameStage() {
 		return currentStage;
+	}
+	
+	public void setCurrentStage(GameStage stage) {
+		currentStage = stage;
 	}
 
 	public int getX() {
