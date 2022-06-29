@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.prefs.Preferences;
 
 import org.openjfx.connect_4.StartMenuController;
-
-import org.openjfx.connect_4.Logik.*;
-import org.openjfx.connect_4.Logik.Game.GameStage;
+import org.openjfx.connect_4.Logik.Game;
+import org.openjfx.connect_4.Logik.GameClock;
+import org.openjfx.connect_4.Logik.LocalPlayer;
+import org.openjfx.connect_4.Logik.Move;
+import org.openjfx.connect_4.Logik.Player;
 
 import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
@@ -69,7 +70,6 @@ public class GameEnvironment {
 	
 	private Label redClock, yellowClock;
 	private GameClock redTimer, yellowTimer;
-	private Game game;
 	
     private Color color;
     private Color transparentColor;
@@ -86,17 +86,16 @@ public class GameEnvironment {
 	private Consumer<Move> placeTokenHandler;
 	private Consumer<Boolean> winEvent;
 	
-	public GameEnvironment(int x, int y, int z, int winningLength, Consumer<Move> placeTokenHandler, Game game) {
+	public GameEnvironment(int x, int y, int z, int winningLength, Consumer<Move> placeTokenHandler) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.winningLength = winningLength;
 		this.placeTokenHandler = placeTokenHandler;
-		this.game = game;
 		init();
 	}
 	
-	private void init() {		
+	private void init() {
 		redturn = true;
 			
 		camera_3D = createCamera();
@@ -112,7 +111,7 @@ public class GameEnvironment {
 		globalRoot.getChildren().add(createTokenSymbolRed());
 		globalRoot.getChildren().add(createGewinnScreen());
 		globalRoot.getChildren().add(createPause());
-		globalRoot.getChildren().add(createGameClocks(StartMenuController.PREFS.getInt("TIME", 5)));
+		globalRoot.getChildren().add(createGameClocks());
 		 
 		scene = new Scene(globalRoot);
 		 
@@ -187,9 +186,7 @@ public class GameEnvironment {
         TranslateTransition animation = new TranslateTransition();
         animation.setNode(token);
         animation.setToY(-(z + 1) * TILE_SIZE); // Zielposition
-        animation.setOnFinished(e -> {
-        	//Platform.runLater(() -> Music.sound("/sounds/Plop_Sound.mp3", false, 2));
-        });
+        animation.setOnFinished(e -> {});
         animation.play();
         
         token.setPickOnBounds(false);
@@ -390,7 +387,9 @@ public class GameEnvironment {
 	 * @author: Endrit
 	 * @return
 	 */
-    private Group createGameClocks(int minutes) {
+    private Group createGameClocks() {
+    	int minutes = StartMenuController.PREFS.getInt("TIME", 5);
+    	
     	Group createGameClocks = new Group();
     	
     	redTimer = new GameClock(minutes * 60);
@@ -412,7 +411,7 @@ public class GameEnvironment {
 		// Tom
 		redTimer.setAction(() -> {
     		Platform.runLater(() -> {
-    			redClock.setText(redTimer.toString()); // aktualisiere Spieluhr
+    			redClock.setText(redTimer.toString());
     		});
     	});
 		
@@ -425,7 +424,7 @@ public class GameEnvironment {
 		redTimer.setOnZero(() -> {
 			System.out.println("Zeit abgelaufen");
     		Platform.runLater(() -> {
-    			winEvent.accept(false); // Gelb hat gewonnen
+    			winEvent.accept(false);
     		});
     	});
 		
@@ -551,24 +550,20 @@ public class GameEnvironment {
 		// mache alle Tokens bis auf die, der Gewinnreihe, transparent
 		winningRows.forEach(winningToken -> allTokens.remove(winningToken));
 		allTokens.forEach(Token::makeTransparent);
-		grid[move_x][move_y][move_z].darker(); // mache gewinntoken heller
     }
     
-    public void homescreen(Event e) {
-    	game.end();
-    	SceneController.switchScene("START_MENU");
+    public void restart() {
+    	SceneController.switchScene("SETTINGS_MENU", "settingsmenu", false);
     }
     
     /**
-     * @author Kevin / Tom
+     * 
      */
     public void gewinnAnimation(String ergebnis) {
-    	Music.sound("/sounds/winningsound.mp3", false, 10.0);
     	Label gewinner = (Label) restartGroup.getChildren().get(1);
     	gewinner.setText(ergebnis);
-    	
     	restartGroup.setVisible(!restartGroup.isVisible());	
-    	
+    	//pauseGroup.setVisible(!pauseGroup.isVisible());	
     	if(restartGroup.isVisible()) {
     		pausiert = true;
     		scene_3D.setOpacity(0.5);
@@ -582,31 +577,18 @@ public class GameEnvironment {
     	}
     }
 
-    /**
-     * @author Kevin / Tom
-     */
     private void pauseanimation() {
     	restartGroup.setVisible(false);
     	pauseGroup.setVisible(!pauseGroup.isVisible());
     	if(pauseGroup.isVisible()) {
     		pausiert = true;
-    		redTimer.stop();
-    		yellowTimer.stop();
-    		scene_3D.setOpacity(0.5);
+    		scene_3D.setOpacity(0.2);
     	}else {
     		pausiert = false;
-    		if(redturn) 
-    			redTimer.start();
-    		else
-    			yellowTimer.start();
     		scene_3D.setOpacity(1.0);
     	}
     }
 
-    /**
-     * @author Kevin
-     * @return
-     */
     private Group createGewinnScreen() {
 		restartGroup = new Group();
 		
@@ -639,10 +621,13 @@ public class GameEnvironment {
 		//lösung: messen mit geodreieck und ausrechnen
 		homescreen.translateYProperty().bind(SceneController.getStage().heightProperty().divide(2).subtract(50));
 		
-		button.setOnAction(this::restart);	
-		homescreen.setOnAction(this::homescreen);
-			
-		
+		button.setOnAction(action -> {
+			System.out.println("Hier muss eine reset operation eingefügt werden");
+			restart();
+		});	
+		homescreen.setOnAction(action -> {
+			SceneController.switchScene("START_MENU");
+		});
 		
 		restartGroup.getChildren().addAll(button, label,homescreen);
 		restartGroup.setVisible(false);
@@ -650,10 +635,6 @@ public class GameEnvironment {
 		return restartGroup;
 	}
 
-    /**
-     * @author Kevin
-     * @return
-     */
     private Group createPause() {
 		pauseGroup = new Group();
 		
@@ -671,62 +652,25 @@ public class GameEnvironment {
 		homescreen.translateXProperty().bind(SceneController.getStage().widthProperty().subtract(196.36+90));
 		homescreen.translateYProperty().bind(SceneController.getStage().heightProperty().divide(2).subtract(50));
 		
-		homescreen.setOnAction(this::homescreen);
-		pause.setOnAction(this::restart);
+		homescreen.setOnAction(action -> {
+			SceneController.switchScene("START_MENU");
+		});
+		
+		pause.setOnAction(action -> {
+			Player player1 = new LocalPlayer();
+			Player player2 = new LocalPlayer();
+	    	Game game = new Game(5, 5, 4, 4, player1, player2);
+	    	player1.setGame(game);
+	    	player2.setGame(game);
+	    	
+	    	game.startGame();
+		});
 			
 	
-		pauseGroup.getChildren().addAll(pause, homescreen);
+		pauseGroup.getChildren().addAll(pause,homescreen);
 		pauseGroup.setVisible(false);
 		return pauseGroup;
 	}
-    
-    /**
-     * @author Tom
-     * @param e: Event
-     */
-    public void restart(Event e) {
-    	game.end();
-    	Preferences PREFS = StartMenuController.PREFS;
-    	
-		Player player1 = new LocalPlayer();
-		Player player2 = new LocalPlayer();
-		
-		String value1 = PREFS.get("PLAYER_1", "Local Player");
-		String value2 = PREFS.get("PLAYER_2", "Local Player");
-		
-    	int x = PREFS.getInt("BOARD_X", 5);
-    	int y = PREFS.getInt("BOARD_Y", 5);
-    	int z = PREFS.getInt("BOARD_Z", 4);
-    	int winningLength = PREFS.getInt("WINNING_LENGTH", 4);
-		
-    	switch(value1) {
-		case "Random Player": 
-			player1 = new RandomPlayer(); break;
-		case "Computer Player": 
-			player1 = new BotPlayer(); break;
-		case "Console Player": 
-			player1 = new ConsolePlayer(); break;
-		default: 
-			player1 = new LocalPlayer();
-		}
-		
-		switch(value2) {
-			case "Random Player": 
-				player2 = new RandomPlayer(); break;
-			case "Computer Player": 
-				player2 = new BotPlayer(); break;
-			case "Console Player": 
-				player2 = new ConsolePlayer(); break;
-			default: 
-				player2 = new LocalPlayer();
-		}
-		
-    	Game game = new Game(x, y, z, winningLength, player1, player2);
-    	player1.setGame(game);
-    	player2.setGame(game);
-    	
-    	game.startGame();
-    }
     
     public void setWinEvent(Consumer<Boolean> winEvent) {
     	this.winEvent = winEvent;
@@ -738,10 +682,6 @@ public class GameEnvironment {
 
 	public static Lighting getLighting() {
 		return lighting;
-	}
-	
-	public void setGame(Game game) {
-		this.game = game;
 	}
 
 	class SmartGroup extends Group {
