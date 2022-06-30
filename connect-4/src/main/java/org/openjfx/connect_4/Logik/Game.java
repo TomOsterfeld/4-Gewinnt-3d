@@ -384,7 +384,7 @@ public class Game {
     		}
     	};
     	
-    	GameEnvironment gameEnvironment = new GameEnvironment(this.x, this.y, this.z, this.winningLength, placeTokenHandler);
+    	GameEnvironment gameEnvironment = new GameEnvironment(this.x, this.y, this.z, this.winningLength, placeTokenHandler, this);
 
     	Consumer<Boolean> winEvent = redwin -> {
     		System.out.println((redwin ? "Rot " : "Gelb") + " hat gewonnen.");

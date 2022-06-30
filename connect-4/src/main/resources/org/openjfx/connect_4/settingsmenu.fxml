@@ -21,13 +21,13 @@
                      </font></Label>
                   <HBox alignment="CENTER" prefHeight="34.0" prefWidth="432.0" spacing="30.0">
                      <children>
-                        <Label prefHeight="31.0" prefWidth="110.0" text="Spielzeit (min)" />
+                        <Label prefHeight="31.0" prefWidth="110.0" text="Spielzeit" />
                         <TextField fx:id="timeTextField" prefHeight="31.0" prefWidth="133.0" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="31.0" prefWidth="432.0" spacing="30.0">
                      <children>
-                        <Label prefHeight="31.0" prefWidth="110.0" text="Botzeit (s)" />
+                        <Label prefHeight="31.0" prefWidth="110.0" text="Botzeit" />
                         <TextField fx:id="botTimeTextField" prefHeight="31.0" prefWidth="133.0" />
                      </children>
                   </HBox>
