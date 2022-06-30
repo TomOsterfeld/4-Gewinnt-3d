@@ -18,7 +18,7 @@ public class RandomPlayer extends Player {
 	 * @return : Move mit zufälligen Koordinaten innerhalb des Spielfeldes
 	 */
 	@Override
-	public Move getMove() {	// TODO: sicherstellen, dass Move gültig ist.	
+	public Move getMove() {	
 		List<Move> valideMoves = game.getValideMoves();
 		
 		int randomIndex = (int) (Math.random() * valideMoves.size()); 

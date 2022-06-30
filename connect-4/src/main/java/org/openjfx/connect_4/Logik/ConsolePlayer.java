@@ -17,10 +17,6 @@ public class ConsolePlayer extends Player {
 
 	private final Scanner SCAN = new Scanner(System.in);
 	
-	/*
-	 * 
-	 */
-	
 	@Override
 	public Move getMove() {
 		Move move;
@@ -29,7 +25,7 @@ public class ConsolePlayer extends Player {
 			int x = getConsoleInteger(0, super.x - 1);
 			int y = getConsoleInteger(0, super.y - 1);
 			move = new Move(x, y);
-		} while(!game.isValide(move));
+		} while(!game.isValide(move)); // solange der Move ungültig ist
 		
 		return move;
 	}

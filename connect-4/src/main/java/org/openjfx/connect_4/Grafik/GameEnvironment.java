@@ -642,8 +642,6 @@ public class GameEnvironment {
 		button.setOnAction(this::restart);	
 		homescreen.setOnAction(this::homescreen);
 			
-		
-		
 		restartGroup.getChildren().addAll(button, label,homescreen);
 		restartGroup.setVisible(false);
 		
@@ -683,6 +681,7 @@ public class GameEnvironment {
     /**
      * @author Tom
      * @param e: Event
+     *  starte das Spiel erneut
      */
     public void restart(Event e) {
     	game.end();
@@ -691,6 +690,7 @@ public class GameEnvironment {
 		Player player1 = new LocalPlayer();
 		Player player2 = new LocalPlayer();
 		
+		// erhalte Einstellungen
 		String value1 = PREFS.get("PLAYER_1", "Local Player");
 		String value2 = PREFS.get("PLAYER_2", "Local Player");
 		
@@ -700,14 +700,14 @@ public class GameEnvironment {
     	int winningLength = PREFS.getInt("WINNING_LENGTH", 4);
 		
     	switch(value1) {
-		case "Random Player": 
-			player1 = new RandomPlayer(); break;
-		case "Computer Player": 
-			player1 = new BotPlayer(); break;
-		case "Console Player": 
-			player1 = new ConsolePlayer(); break;
-		default: 
-			player1 = new LocalPlayer();
+			case "Random Player": 
+				player1 = new RandomPlayer(); break;
+			case "Computer Player": 
+				player1 = new BotPlayer(); break;
+			case "Console Player": 
+				player1 = new ConsolePlayer(); break;
+			default: 
+				player1 = new LocalPlayer();
 		}
 		
 		switch(value2) {
@@ -744,6 +744,9 @@ public class GameEnvironment {
 		this.game = game;
 	}
 
+	/**
+	 * Eine Gruppe, die sich einfach rotieren lässt
+	 */
 	class SmartGroup extends Group {
         Rotate rotation;
         Transform transformation = new Rotate();

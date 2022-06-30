@@ -302,13 +302,16 @@ public class Game {
 		for(int x = -1; x <= 1; x++) {
 			for(int y = -1; y <= 1; y++) {
 				for(int z = -1; z <= 1; z++) {
-					if(x == 0 && y == 0 && z == 0) break; // at least one index needs to change
+					if(x == 0 && y == 0 && z == 0) break; // Es muss sich mindestens ein Index ändern
+					// break, da alle danach kommenden Paare an Indizes negierte Paare vorheriger Indizes sind 
+					// und Reihen andernfall mehrmals durchschritten würden
 					
-					int leftBoarder = winningLength - 1;
+					int leftBoarder = winningLength - 1; // gibt die Maximalen Schritte nach vorne bzw. hinten an
 					int rightBoarder = winningLength - 1;
 					
-					int move_x = move.getX(), move_y = move.getY();
+					int move_x = move.getX(), move_y = move.getY(); // x- und y-Koordinaten
 					
+					// left und rightboarder werden verkleinert, falls die Spielfeldbegrenzung andernfalls überschritten würde
 					if(x != 0) {
 						if(x == 1) {
 							leftBoarder = Math.min(leftBoarder, move_x);
@@ -344,7 +347,7 @@ public class Game {
 					if(rowLength < winningLength) continue; // row not long enough
 					List<Token> row = new ArrayList(2 * winningLength - 1);
 					
-					int _x = move_x - x * leftBoarder;
+					int _x = move_x - x * leftBoarder; // Indizes des ersten Tokens der reihe
 					int _y = move_y - y * leftBoarder;
 					int _z = move_z - z * leftBoarder;
 					
@@ -390,13 +393,13 @@ public class Game {
     		System.out.println((redwin ? "Rot " : "Gelb") + " hat gewonnen.");
     		game.setCurrentStage(redwin ? GameStage.RED_WIN : GameStage.YELLOW_WIN); // set GameStage to winner
     		Platform.runLater(() -> {
-    			gameEnvironment.gewinnAnimation("Rot gewinnt");
+    			gameEnvironment.gewinnAnimation("Rot gewinnt"); // Gewinnanimation wird ausgeführt
     		});
     	};
     	
     	gameEnvironment.setWinEvent(winEvent);
     	
-        SceneController.switchScene("GAME_ENVIRONMENT", gameEnvironment.getScene()); //TODO: there might be several gameEnvironments
+        SceneController.switchScene("GAME_ENVIRONMENT", gameEnvironment.getScene());
     	
         Thread thread = new Thread() {
         	public void run() {
@@ -404,7 +407,7 @@ public class Game {
         		
         		Move move = new Move(0, 0);
         		
-		    	while(currentStage.equals(GameStage.GAME_NOT_ENDED) && !ended) {
+		    	while(currentStage.equals(GameStage.GAME_NOT_ENDED) && !ended) { // solange das Spiel nicht vorbei ist
 	    			try {
 						this.sleep(50); // leichte Verzï¿½gerung andernfalls ist es mÃ¶glich, dass der vorherige Zug nicht vollstÃ¤ndig ausgefÃ¼hrt wurde
 					} catch (InterruptedException e) {

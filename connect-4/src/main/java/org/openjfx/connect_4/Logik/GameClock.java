@@ -51,8 +51,7 @@ public class GameClock {
 	 */
 		
 	}
-	public void stop() {
-	//Timer timer = new Timer();	
+	public void stop() {	
 		timer.cancel();
 	}	
 	

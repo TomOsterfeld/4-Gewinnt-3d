@@ -63,10 +63,15 @@ public class BotPlayer extends Player {
 		return bestMove;
 	}
 	
+	/**
+	 * @param depth: Die aktuelle Suchtiefe
+	 * 
+	 */
 	private int maximize(int depth, int alpha, int beta) {
 		int maxEval = Integer.MIN_VALUE;
 		int rating = game.getRating();
 		
+		// wenn das Spiel vorbei ist oder die Suchtiefe bei 0 liegt, soll
 		if(!game.getCurrentGameStage().equals(GameStage.GAME_NOT_ENDED) || depth == 0)
 			return rating;
 		
@@ -111,7 +116,7 @@ public class BotPlayer extends Player {
 			
 			if(eval < minEval) {
 				minEval = eval;
-				if(depth == currentDepth) {
+				if(depth == currentDepth) { // Ganz oben im Suchbaum
 					bestMove = move;
 				}
 			}

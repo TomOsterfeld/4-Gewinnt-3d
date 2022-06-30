@@ -23,8 +23,8 @@ public class SceneController {
     /**
      * switches the stages scene
      *
-     * @param sceneName: the name of the new scene
-     * @param path:      the path to the fxml file of the new scene
+     * @param sceneName: Der Name der Scene
+     * @param path:      Der Pfad des fxml-files
      */
     public static void switchScene(String sceneName, String path, boolean resizable) {
         //FXMLLoader fxmlLoader = new FXMLLoader(SceneController.class.getClassLoader().getResource(path + ".fxml"));
@@ -48,15 +48,19 @@ public class SceneController {
     /**
      * @param sceneName: the name of the new scene
      * @param scene:     the scene to be switched to
+     * Wenn eine Scene mit übergeben wird, soll diese immer neu geladen werden und nicht die der HashMap angezeigt werden
      */
     public static void switchScene(String sceneName, Scene scene) {
         switchScene(sceneName, scene, true, true);
     }
-
+    
     public static void switchScene(String sceneName) {
-        switchScene(sceneName, new Scene(new Group()), RESIZEBLE_MAP.get(sceneName), false);
+        switchScene(sceneName, null, false, false);
     }
 
+    /**
+     * @param: newScene: soll Scene neu geladen werden
+     */
     public static void switchScene(String sceneName, Scene scene, boolean resizable, boolean newScene) {
         if (!SCENE_HASH_MAP.containsKey(sceneName) || newScene) {
             SCENE_HASH_MAP.put(sceneName, scene);
@@ -65,7 +69,7 @@ public class SceneController {
 
         stage.setScene(SCENE_HASH_MAP.get(sceneName));
     	System.out.println("Switch to " + sceneName);
-        stage.setResizable(resizable);
+        stage.setResizable(RESIZEBLE_MAP.get(sceneName));
         stage.centerOnScreen();
     }
 

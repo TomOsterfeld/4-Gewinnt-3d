@@ -20,6 +20,7 @@ public class SettingsMenuController {
 	public void initialize() {
     	Preferences PREFS = StartMenuController.PREFS;
 		
+    	// erhalte die gespeicherten Werte und setze den Text der Textfelder darauf
     	int time = PREFS.getInt("TIME", 5);
     	int botTime = PREFS.getInt("BOT_TIME", 2);
     	int x = PREFS.getInt("BOARD_X", 5);
@@ -38,6 +39,7 @@ public class SettingsMenuController {
     @FXML
     private void onStartMenuButtonClicked() {
     	Preferences PREFS = StartMenuController.PREFS;
+    	// Speicher die Werte der Textfelder ab, wenn man das Menü verlässt
     		
     	PREFS.putInt("TIME", getInt(timeTextField.getText(), 1, 59));
     	PREFS.putInt("BOT_TIME", getInt(botTimeTextField.getText(), 1, 59));
@@ -49,6 +51,9 @@ public class SettingsMenuController {
     	SceneController.switchScene("START_MENU", "settingsmenu", false);
     }
     
+    /**
+     * wandle String in Integer um, der zwischen min und max liegt
+     */
     private int getInt(String value, int min, int max) {
     	int integer = min;
     	
