@@ -16,13 +16,13 @@ public class Music {
 		Media sound;
 		try {
 			sound = new Media(Music.class.getResource(path).toURI().toString());
-			MediaPlayer mediaPlayer  = new MediaPlayer(sound);
+			MediaPlayer mediaPlayer = new MediaPlayer(sound);
 			mediaPlayer.setVolume(volume);
 			mediaPlayer.play();
-			if(cycle) 
+			if (cycle)
 				mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
-		} 
+		}
 	}
 }

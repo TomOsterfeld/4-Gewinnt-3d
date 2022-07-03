@@ -7,27 +7,28 @@ import java.util.List;
  * @author Tom
  *
  */
-public class RandomPlayer extends Player {	
+public class RandomPlayer extends Player {
 	public RandomPlayer(Game game) {
 		super(game);
 	}
-	
-	public RandomPlayer() {}
+
+	public RandomPlayer() {
+	}
 
 	/**
 	 * @return : Move mit zufälligen Koordinaten innerhalb des Spielfeldes
 	 */
 	@Override
-	public Move getMove() {	
+	public Move getMove() {
 		List<Move> valideMoves = game.getValideMoves();
-		
-		int randomIndex = (int) (Math.random() * valideMoves.size()); 
-		
+
+		int randomIndex = (int) (Math.random() * valideMoves.size());
+
 		return valideMoves.get(randomIndex);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Random Player";
-	}	
+	}
 }

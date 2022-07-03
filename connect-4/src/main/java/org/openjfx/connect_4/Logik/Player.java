@@ -10,21 +10,22 @@ public abstract class Player {
 	protected int x;
 	protected int y;
 	protected Move move;
-	
+
 	public Player(Game game) {
 		this.game = game;
 		x = game.getX();
 		y = game.getY();
 	}
-	
-	public Player() {}
-	
+
+	public Player() {
+	}
+
 	public abstract Move getMove();
-	
+
 	public void setGame(Game game) {
 		this.game = game;
 	}
-	
+
 	public void setMove(Move move) {
 		this.move = move;
 	}

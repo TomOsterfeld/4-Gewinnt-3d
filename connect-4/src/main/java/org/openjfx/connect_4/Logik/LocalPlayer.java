@@ -3,7 +3,7 @@ package org.openjfx.connect_4.Logik;
 public class LocalPlayer extends Player {
 	@Override
 	public synchronized Move getMove() {
-		synchronized(this) {
+		synchronized (this) {
 			try {
 				wait();
 			} catch (InterruptedException e) {
@@ -11,12 +11,12 @@ public class LocalPlayer extends Player {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return move;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Local Player";
-	}	
+	}
 }

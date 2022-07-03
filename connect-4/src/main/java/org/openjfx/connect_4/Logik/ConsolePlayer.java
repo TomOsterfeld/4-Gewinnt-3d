@@ -12,24 +12,25 @@ public class ConsolePlayer extends Player {
 		super(game);
 		// TODO Auto-generated constructor stub
 	}
-	
-	public ConsolePlayer() {}
+
+	public ConsolePlayer() {
+	}
 
 	private final Scanner SCAN = new Scanner(System.in);
-	
+
 	@Override
 	public Move getMove() {
 		Move move;
-		
+
 		do {
 			int x = getConsoleInteger(0, super.x - 1);
 			int y = getConsoleInteger(0, super.y - 1);
 			move = new Move(x, y);
-		} while(!game.isValide(move)); // solange der Move ungültig ist
-		
+		} while (!game.isValide(move)); // solange der Move ungï¿½ltig ist
+
 		return move;
 	}
-	
+
 	/**
 	 * 
 	 * @param min : untere Schranke
@@ -38,16 +39,16 @@ public class ConsolePlayer extends Player {
 	 */
 	public int getConsoleInteger(int min, int max) {
 		int number;
-		
+
 		do {
 			number = SCAN.nextInt();
-		} while(number < min && number > max);
-		
+		} while (number < min && number > max);
+
 		return number;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Console Player";
-	}	
+	}
 }
