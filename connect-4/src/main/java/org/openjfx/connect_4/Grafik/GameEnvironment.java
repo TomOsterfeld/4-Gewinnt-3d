@@ -450,7 +450,7 @@ public class GameEnvironment {
 	}
 
 	/**
-	 * @author Endrit (Tom überarbeitet)
+	 * @author Endrit (formale Überarbeitung durch Tom)
 	 * @param welcheFarbe
 	 */
 	public void macheSichtbar(boolean rot) {
@@ -470,7 +470,6 @@ public class GameEnvironment {
 		}
 
 		// um jetzt eigene listen für die gelben oder roten kugeln zu haben
-
 		if (rot) {
 			if (redUntransparent) {
 				allRedTokens.forEach(Token::makeTransparent);

@@ -8,9 +8,7 @@ import javafx.scene.media.MediaPlayer;
 public class Music {
 
 	/**
-	 * @author Endrit / Tom
-	 * @param path
-	 * @param cycle
+	 * @author Endrit (formale Überarbeitung durch Tom)
 	 */
 	public static void sound(String path, boolean cycle, double volume) {
 		Media sound;

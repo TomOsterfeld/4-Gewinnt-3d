@@ -26,9 +26,6 @@ public class SceneController {
 	 * @param path:      Der Pfad des fxml-files
 	 */
 	public static void switchScene(String sceneName, String path, boolean resizable) {
-		// FXMLLoader fxmlLoader = new
-		// FXMLLoader(SceneController.class.getClassLoader().getResource(path +
-		// ".fxml"));
 		FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource(path + ".fxml"));
 
 		if (!SCENE_HASH_MAP.containsKey(sceneName)) {
