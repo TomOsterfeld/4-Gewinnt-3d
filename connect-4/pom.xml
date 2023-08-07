@@ -42,11 +42,9 @@
                 <version>0.0.6</version>
                 <executions>
                     <execution>
-                        <!-- Default configuration for running -->
-                        <!-- Usage: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>org.openjfx.connect_4.App</mainClass>
+                            <mainClass>org.openjfx.connect_4.Main</mainClass>
                         </configuration>
                     </execution>
                 </executions>
